@@ -8,26 +8,43 @@ def load_code(filename):
 	file_list = []
 	line = file.readline()
 
+	lineNumber = 1
 	while line != "":
+		shouldPrint = lineNumber < 70
 		line_split = line.split("\t")
+		nani = (hex(pc_hex))[2:]+":"
+
+		if shouldPrint:
+			print("line_split ", line_split)
+			print("nani ", nani)
 		#print((line_split[0]).strip())
 		#print((hex(pc_hex))[2:]+":"+"*")
 		if ((line_split[0]).strip() == ((hex(pc_hex))[2:]+":")):
+			if shouldPrint:
+				print(lineNumber, "1")
 			line_split[0] = line_split[0].strip()
 			file_list.append(line_split)
 			line = file.readline()
 			pc_hex += 2
+			lineNumber+=1
 		elif ((line_split[0]).strip() == ((hex(pc_hex+2))[2:]+":")):
+			if shouldPrint:
+				print(lineNumber, "2")
 			line_split[0] = line_split[0].strip()
 			file_list.append(line_split)
 			line = file.readline()
 			pc_hex += 4
+			lineNumber+=1
 		else:
+			if shouldPrint:
+				print(lineNumber, "3")
 			line = file.readline()
+			lineNumber+=1
 			continue
 
-	for item in file_list:
-		print(item)
+
+	# for item in file_list:
+		# print(item)
 
 	return file_list
 
@@ -76,6 +93,12 @@ def create_instruction_set():
 	i_s["cli"] = (na, i, [1])
 	i_s["sei"] = (na, i, [1])
 	i_s["breq"] = (na, na, [1,2])
+
+	i_s["nop"] = (na, na, [2])
+	i_s[".word"] = (na, na, [0])
+	i_s["ld"] = (rs, na, [1,2,3]) # load register with data space loc
+	# CC variation - accessing internal SRAM & FLASH
+
 	return i_s
 
 def simulate(code_list, line_dict, instruction_set):
@@ -90,14 +113,16 @@ def simulate(code_list, line_dict, instruction_set):
 	stack = []
 	registers = []
 	t_n = 0
-	print(instruction_set)
+	# print(instruction_set)
 	#user_registers_sram will be a subset of use_register
 	while(t_n < 100):
 		print("")
-		print(t_n,":")
+		print("ee ", t_n,":")
 		pc_line = code_list[index]
 		command = pc_line[2].replace("\n","")
-		print(pc_line)
+
+		print("PC ", pc_line)
+		print("Command: ", command)
 		command_hardware = (instruction_set[command])[0]
 		flags_used = (instruction_set[command])[1]
 		#separate if statements for commands that dont use registers
@@ -116,7 +141,7 @@ def simulate(code_list, line_dict, instruction_set):
 					sram[r] = 0
 
 		#--------------individual command code--------------
-		#--------------arithmetic---------------------------	
+		#--------------arithmetic---------------------------
 		#all but one (SER) arithmetic commands affeect 2 or more registers
 		if command == "add":
 			result = register_dict[registers[0]] + register_dict[registers[1]]
@@ -222,6 +247,15 @@ def simulate(code_list, line_dict, instruction_set):
 			else:
 				index += 1
 
+		elif command == "nop":
+			print("pinged")
+			index += 1
+
+		elif command == ".word":
+			# Nothing fancy about this directive
+			# Allocates space for creating a variable
+			index += 1
+
 		#BRCS
 		#BRCC
 		#BRSH
@@ -240,7 +274,7 @@ def simulate(code_list, line_dict, instruction_set):
 		#BRID
 
 		#--------------bit operations-----------------------
-		
+
 		#SBI
 		#CBI
 		#LSL
@@ -297,6 +331,10 @@ def simulate(code_list, line_dict, instruction_set):
 		#LDS
 		#ST
 		#STD
+
+		elif command == "ld":
+			register_dict[registers[0]] = sram[registers[1]]
+
 
 		elif command == "sts":
 			sram[registers[0]] = register_dict[registers[1]]
@@ -358,7 +396,7 @@ def check_flags(result, flag_dict,flags_used):
 			flag_dict["N"] = 0
 
 def main():
-	code = load_code("blocks3.txt")
+	code = load_code("LADS_Math_loop.txt")
 	d = create_line_dict(code)
 	instruction_set = create_instruction_set()
 	simulate(code,d, instruction_set)
