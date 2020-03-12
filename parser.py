@@ -1,37 +1,80 @@
+import sys
+import re
+
+global_regex = re.compile('[\w]+:')
 
 def load_code(filename):
-	pc_int = 0
-	pc_hex = 0
-
+	curr_pc_int = 0
+	prev_pc_int = -1
+	code_flag = False
 	file = open(filename, "r")
 
 	file_list = []
 	line = file.readline()
 
 	while line != "":
+		#control statements that will only read the .text (our code) of the input file
 		line_split = line.split("\t")
-		#print((line_split[0]).strip())
-		#print((hex(pc_hex))[2:]+":"+"*")
-		if ((line_split[0]).strip() == ((hex(pc_hex))[2:]+":")):
-			line_split[0] = line_split[0].strip()
-			file_list.append(line_split)
+		if line_split[0] == "Disassembly of section .text:\n":
+			code_flag = True
+		if line_split[0] == "Disassembly of section .bss:\n":
+			code_flag = False
+		if code_flag == False:
 			line = file.readline()
-			pc_hex += 2
-		elif ((line_split[0]).strip() == ((hex(pc_hex+2))[2:]+":")):
-			line_split[0] = line_split[0].strip()
-			file_list.append(line_split)
-			line = file.readline()
-			pc_hex += 4
+			continue
+		potential_pc = line_split[0].strip(' ')
+		if global_regex.match(potential_pc) != None:
+			#new pc_checker
+			string_hex = potential_pc[:-1]
+			curr_pc_int = int(string_hex,16)
+			print(curr_pc_int)
+			pc_difference = curr_pc_int - prev_pc_int
+			if pc_difference > 4:
+				num_nops = pc_difference //2
+				for i in range(num_nops):
+					formated_line = [hex(prev_pc_int+2*(i+1))[2:]+':', '00 00', 'nop']
+					curr_pc_int = (prev_pc_int+2*(i+1))
+					file_list.append(formated_line)
+				prev_pc_int = curr_pc_int
+				line = file.readline()
+			else:
+				line_split[0] = potential_pc
+				file_list.append(line_split)
+				prev_pc_int = curr_pc_int
+				line = file.readline()
+
+
+
+			# #old pc checker
+			# print(line_split)
+			# if ((line_split[0]).strip() == ((hex(pc_hex))[2:]+":")):
+			# 	previous_line = (line_split[0]).strip()
+			# 	line_split[0] = line_split[0].strip()
+			# 	file_list.append(line_split)
+			# 	line = file.readline()
+			# 	pc_hex += 2
+			# elif ((line_split[0]).strip() == ((hex(pc_hex+2))[2:]+":")):
+			# 	previous_line = (line_split[0]).strip()
+			# 	line_split[0] = line_split[0].strip()
+			# 	file_list.append(line_split)
+			# 	line = file.readline()
+			# 	pc_hex += 4
+			# else:
+			# 	line = file.readline()
+			# 	continue
 		else:
 			line = file.readline()
 			continue
-
 	for item in file_list:
 		print(item)
-
+	exit(1)
 	return file_list
 
 def create_line_dict(code_list):
+	print("creating_line_dict...")
+	for i in code_list:
+		print(i)
+	exit(1)
 	ret_d = {}
 	index_count = 0
 	for line in code_list:
@@ -81,6 +124,7 @@ def create_instruction_set():
 def simulate(code_list, line_dict, instruction_set):
 	print("---------------------------")
 	print("")
+	ret_list = []
 	index = 0
 	register_dict = {}
 	flag_dict = {"Z": 0, "C": 0, "N": 0, "V": 0, "I": 0, "B": 0}
@@ -98,6 +142,7 @@ def simulate(code_list, line_dict, instruction_set):
 		pc_line = code_list[index]
 		command = pc_line[2].replace("\n","")
 		print(pc_line)
+		ret_list.append(pc_line)
 		command_hardware = (instruction_set[command])[0]
 		flags_used = (instruction_set[command])[1]
 		#separate if statements for commands that dont use registers
@@ -203,7 +248,6 @@ def simulate(code_list, line_dict, instruction_set):
 			check_flags(result,flag_dict,flags_used)
 			index += 1
 
-		#CPI
 		#SBRC
 		#SBRS
 		#SBIC
@@ -275,7 +319,9 @@ def simulate(code_list, line_dict, instruction_set):
 		#CLT
 		#SEH
 		#CLH
-
+		#NOP
+		elif command == "nop":
+			index += 1
 
 
 		#--------------data transfer------------------------
@@ -320,6 +366,7 @@ def simulate(code_list, line_dict, instruction_set):
 
 		print(register_dict)
 		t_n += 1
+	return ret_list
 
 def rjump(pc_line,line_dict):
 	direction_num_no_space = pc_line[3].strip()
@@ -357,11 +404,18 @@ def check_flags(result, flag_dict,flags_used):
 		else:
 			flag_dict["N"] = 0
 
+def save_output(ret_list,filename):
+	out_file = open(filename+'OUT.txt','w')
+	for i in range(len(ret_list)):
+		print(ret_list[i], file=out_file)
+
 def main():
-	code = load_code("blocks3.txt")
+	filename = sys.argv[1]
+	code = load_code(filename)
 	d = create_line_dict(code)
 	instruction_set = create_instruction_set()
-	simulate(code,d, instruction_set)
+	ret_list = simulate(code,d, instruction_set)
+	save_output(ret_list,filename)
 
 main()
 
