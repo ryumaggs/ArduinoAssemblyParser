@@ -119,6 +119,9 @@ def create_instruction_set():
 	i_s["cli"] = (na, i, [1])
 	i_s["sei"] = (na, i, [1])
 	i_s["breq"] = (na, na, [1,2])
+	i_s["nop"] = (na, na, [2])
+	i_s[".word"] = (na, na, [0])
+	i_s["ld"] = (rs, na, [1,2,3])
 	return i_s
 
 def simulate(code_list, line_dict, instruction_set):
@@ -161,7 +164,20 @@ def simulate(code_list, line_dict, instruction_set):
 					sram[r] = 0
 
 		#--------------individual command code--------------
-		#--------------arithmetic---------------------------	
+
+
+		#---------- misc --------------
+		if command == "nop":
+			index += 1
+
+		if command == ".word":
+			# Nothing fancy about this directive
+			# Allocates space for creating a variable
+			index += 1
+
+
+
+		#--------------arithmetic---------------------------
 		#all but one (SER) arithmetic commands affeect 2 or more registers
 		if command == "add":
 			result = register_dict[registers[0]] + register_dict[registers[1]]
@@ -284,7 +300,7 @@ def simulate(code_list, line_dict, instruction_set):
 		#BRID
 
 		#--------------bit operations-----------------------
-		
+
 		#SBI
 		#CBI
 		#LSL
@@ -333,6 +349,11 @@ def simulate(code_list, line_dict, instruction_set):
 			index += 1
 
 		#LD
+
+		elif command == "ld":
+			register_dict[registers[0]] = sram[registers[1]]
+
+
 		#LDD
 
 		elif command == "lds":
