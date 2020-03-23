@@ -88,6 +88,7 @@ def create_instruction_set():
 	r = ["r"] #use registers
 	rc = ["r", "C"] #use register and carry bit
 	rs = ["r", "s"] #user register and sram
+	rfs = ["r", "f", "s"] #user register, flash, and sram
 	zcvh = ["Z", "C", "V", "H"] #zero, carry, ??, ??
 	zcvs = ["Z", "C", "V", "S"] #zero, carry, ??, ??
 	znvs = ["Z", "N", "V", "S"]
@@ -121,13 +122,17 @@ def create_instruction_set():
 	i_s["breq"] = (na, na, [1,2])
 	i_s["nop"] = (na, na, [2])
 	i_s[".word"] = (na, na, [0])
-	i_s["sbc"] = (rc,zcvh,[1])
-	i_s["and"] = (r,znvs,[1])
+	i_s["sbc"] = (rc, zcvh, [1])
+	i_s["and"] = (r, znvs, [1])
+	i_s["adc"] = (rc, zcvh, [1])
+	i_s["movw"] = (r, na, [1])
+	i_s["subi"] = (r, zcvh, [1])
+	i_s["sbci"] = (r, zcvh, [1])
 
 	#TODO
-	i_s["ld"] = (rs, na, [1,2,3])
-	i_s["lpm"] = (rs,na,[3])
-	i_s["st"] = (rs,na,[1])
+	i_s["ld"] = (rfs, na, [2])
+	i_s["lpm"] = (rfs,na,[3])
+	i_s["st"] = (rfs,na,[1])
 
 	return i_s
 
@@ -136,7 +141,7 @@ def simulate(code_list, line_dict, instruction_set):
 	print("")
 	ret_list = []
 	index = 0
-	register_dict = {}
+	register_dict = {"r0":0, "Z":0, "X":0, "Y":0}
 	flag_dict = {"Z": 0, "C": 0, "N": 0, "V": 0, "I": 0, "B": 0}
 	#Z = zero flag, C = carry bit, N = negative flag, V = twos complement, I = global interrupt
 	#B = half carry flag
@@ -155,6 +160,7 @@ def simulate(code_list, line_dict, instruction_set):
 		ret_list.append(pc_line)
 		command_hardware = (instruction_set[command])[0]
 		flags_used = (instruction_set[command])[1]
+		flash = None
 		#separate if statements for commands that dont use registers
 		if "r" in command_hardware:
 			registers = (pc_line[3]).replace("\n","").replace(" ", "").split(",")
@@ -164,11 +170,36 @@ def simulate(code_list, line_dict, instruction_set):
 				if r not in register_dict and r[0] == 'r':
 					register_dict[r] = 0
 
+
 		if "s" in command_hardware:
 			mem = (pc_line[3]).replace("\n","").replace(" ", "").split(",")
 			for r in mem:
-				if r not in sram and r[0] != 'r':
+				if r not in sram and r[0] == '0':
 					sram[r] = 0
+
+		if "f" in command_hardware:
+			args = (pc_line[3]).replace("\n","").replace(" ", "").split(",")
+			for f in args:
+				if "Z+" in f:
+					flash = "Z+"
+				elif "-Z" in f:
+					flash = "-Z"
+				elif "Z" in f:
+					flash = "Z"
+				elif "Y+" in f:
+					flash = "Y+"
+				elif "-Y" in f:
+					flash = "-Y"
+				elif "Y" in f:
+					flash = "Y"
+				elif "X+" in f:
+					flash = "X+"
+				elif "-X" in f:
+					flash = "-X"
+				elif "X" in f:
+					flash = "X"
+				if not flash is None:
+					break
 
 		#--------------individual command code--------------
 
@@ -193,9 +224,20 @@ def simulate(code_list, line_dict, instruction_set):
 			index += 1
 
 		#ADC
+		elif command == "adc":
+			result = register_dict[registers[0]] + register_dict[registers[1]]
+			check_flags(result, flag_dict,flags_used)
+			register_dict[registers[0]] = result + flag_dict["C"]
+			index += 1
 		#ADIW
 		#SUB
 		#SUBI
+		elif command == "subi":
+			result = register_dict[registers[0]] - int(registers[1],0)
+			check_flags(result,flag_dict,flags_used)
+			register_dict[registers[0]] = result
+			index+= 1
+
 		#SBC
 		elif command == "sbc":
 		#TODO: Check if carry is handled correctly
@@ -205,6 +247,11 @@ def simulate(code_list, line_dict, instruction_set):
 			index += 1
 
 		#SBCI
+		elif command == "sbci":
+			result = register_dict[registers[0]] - int(registers[1],0)
+			check_flags(result, flag_dict,flags_used)
+			register_dict[registers[0]] = result - flag_dict["C"]
+			index += 1
 
 		elif command == "sbiw":
 			result = register_dict[registers[0]] - int(registers[1],0)
@@ -214,7 +261,7 @@ def simulate(code_list, line_dict, instruction_set):
 
 		#AND
 		elif command == "and":
-				result = register_dict[registers[0]] and int(registers[1],0)
+				result = register_dict[registers[0]] and register_dict[registers[1]]
 				check_flags(result,flag_dict,flags_used)
 				register_dict[registers[0]] = result
 				index+= 1
@@ -362,6 +409,17 @@ def simulate(code_list, line_dict, instruction_set):
 		#--------------data transfer------------------------
 		#MOV
 		#MOVW
+		elif command == "movw":
+			register_dict[registers[0]] = register_dict[registers[1]]
+			rd = int(registers[0][1:])+1
+			if rd not in register_dict:
+				register_dict[rd] = 0
+			rr = int(registers[1][1:])+1
+			if rr not in register_dict:
+				register_dict[rr] = 0
+			register_dict[rd] = register_dict[rr]
+			index += 1
+
 
 		elif command == "ldi":
 			register_dict[registers[0]] = int(registers[1],0)
@@ -370,7 +428,34 @@ def simulate(code_list, line_dict, instruction_set):
 		#LD
 
 		elif command == "ld":
-			register_dict[registers[0]] = sram[registers[1]]
+			if flash == "Z+":
+				register_dict[registers[0]] = sram[register_dict["Z"]]
+				register_dict["Z"] += 1
+			elif flash == "-Z":
+				register_dict["Z"] -= 1
+				register_dict[registers[0]] = sram[register_dict["Z"]]
+			elif flash == "Z":
+				register_dict[registers[0]] = sram[register_dict["Z"]]
+			elif flash == "Y+":
+				register_dict[registers[0]] = sram[register_dict["Y"]]
+				register_dict["Y"] += 1
+			elif flash == "-Y":
+				register_dict["Y"] -= 1
+				register_dict[registers[0]] = sram[register_dict["Y"]]
+			elif flash == "Y":
+				register_dict[registers[0]] = sram[register_dict["Y"]]
+			elif flash == "X+":
+				register_dict[registers[0]] = sram[register_dict["X"]]
+				register_dict["X"] += 1
+			elif flash == "-X":
+				register_dict["X"] -= 1
+				register_dict[registers[0]] = sram[register_dict["X"]]
+			elif flash == "X":
+				register_dict[registers[0]] = sram[register_dict["X"]]
+			else:
+				#should never happen
+				raise ValueError
+			# register_dict[registers[0]] = sram[registers[1]]
 			index += 1
 
 
@@ -383,7 +468,33 @@ def simulate(code_list, line_dict, instruction_set):
 		#LDS
 		#ST
 		elif command == "st":
-			sram[registers[0]] = register_dict[registers[1]]
+			if flash == "Z+":
+				sram[register_dict["Z"]] = register_dict[registers[0]]
+				register_dict["Z"] += 1
+			elif flash == "-Z":
+				register_dict["Z"] -= 1
+				sram[register_dict["Z"]] = register_dict[registers[0]]
+			elif flash == "Z":
+				sram[register_dict["Z"]] = register_dict[registers[0]]
+			elif flash == "Y+":
+				sram[register_dict["Y"]] = register_dict[registers[0]]
+				register_dict["Y"] += 1
+			elif flash == "-Y":
+				register_dict["Y"] -= 1
+				sram[register_dict["Y"]] = register_dict[registers[0]]
+			elif flash == "Y":
+				sram[register_dict["Y"]] = register_dict[registers[0]]
+			elif flash == "X+":
+				sram[register_dict["X"]] = register_dict[registers[0]]
+				register_dict["X"] += 1
+			elif flash == "-X":
+				register_dict["X"] -= 1
+				sram[register_dict["X"]] = register_dict[registers[0]]
+			elif flash == "X":
+				sram[register_dict["X"]] = register_dict[registers[0]]
+			else:
+				#should never happen
+				raise ValueError
 			index += 1
 
 		#STD
@@ -394,7 +505,17 @@ def simulate(code_list, line_dict, instruction_set):
 
 		#LPM
 		elif command == "lpm":
-			register_dict[registers[0]] = sram[registers[1]]
+			if flash is None:
+				register_dict["r0"] = sram[register_dict["Z"]]
+			elif flash == "Z+":
+				sram[register_dict["Z"]] = register_dict[registers[0]]
+				register_dict["Z"] += 1
+			elif flash == "Z":
+				sram[register_dict["Z"]] = register_dict[registers[0]]
+			else:
+				#should never happen
+				raise ValueError
+
 			index += 1
 
 		#ELPM
@@ -460,6 +581,7 @@ def save_output(ret_list,filename):
 
 def main():
 	filename = sys.argv[1]
+	print(filename)
 	code = load_code(filename)
 	d = create_line_dict(code)
 	instruction_set = create_instruction_set()
