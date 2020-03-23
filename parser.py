@@ -1,7 +1,7 @@
 import sys
 import re
 
-global_regex = re.compile('[\w]+:')
+global_regex = re.compile('[0-9a-fA-F]+:')
 
 def load_code(filename):
 	curr_pc_int = 0
@@ -27,7 +27,7 @@ def load_code(filename):
 			#new pc_checker
 			string_hex = potential_pc[:-1]
 			curr_pc_int = int(string_hex,16)
-			print(curr_pc_int)
+			# print(curr_pc_int)
 			pc_difference = curr_pc_int - prev_pc_int
 			if pc_difference > 4:
 				num_nops = pc_difference //2
@@ -67,14 +67,13 @@ def load_code(filename):
 			continue
 	for item in file_list:
 		print(item)
-	exit(1)
+
 	return file_list
 
 def create_line_dict(code_list):
-	print("creating_line_dict...")
-	for i in code_list:
-		print(i)
-	exit(1)
+	# print("creating_line_dict...")
+	# for i in code_list:
+	# 	print(i)
 	ret_d = {}
 	index_count = 0
 	for line in code_list:
@@ -91,6 +90,7 @@ def create_instruction_set():
 	rs = ["r", "s"] #user register and sram
 	zcvh = ["Z", "C", "V", "H"] #zero, carry, ??, ??
 	zcvs = ["Z", "C", "V", "S"] #zero, carry, ??, ??
+	znvs = ["Z", "N", "V", "S"]
 	znv = ["Z", "N", "V"] #zero, ??, ??
 	na = [] #none
 	#----------------------------------
@@ -121,7 +121,14 @@ def create_instruction_set():
 	i_s["breq"] = (na, na, [1,2])
 	i_s["nop"] = (na, na, [2])
 	i_s[".word"] = (na, na, [0])
+	i_s["sbc"] = (rc,zcvh,[1])
+	i_s["and"] = (r,znvs,[1])
+
+	#TODO
 	i_s["ld"] = (rs, na, [1,2,3])
+	i_s["lpm"] = (rs,na,[3])
+	i_s["st"] = (rs,na,[1])
+
 	return i_s
 
 def simulate(code_list, line_dict, instruction_set):
@@ -137,7 +144,7 @@ def simulate(code_list, line_dict, instruction_set):
 	stack = []
 	registers = []
 	t_n = 0
-	print(instruction_set)
+	# print(instruction_set)
 	#user_registers_sram will be a subset of use_register
 	while(t_n < 100):
 		print("")
@@ -190,6 +197,13 @@ def simulate(code_list, line_dict, instruction_set):
 		#SUB
 		#SUBI
 		#SBC
+		elif command == "sbc":
+		#TODO: Check if carry is handled correctly
+			result = register_dict[registers[0]] - register_dict[registers[1]]
+			check_flags(result, flag_dict,flags_used)
+			register_dict[registers[0]] = result - flag_dict["C"]
+			index += 1
+
 		#SBCI
 
 		elif command == "sbiw":
@@ -199,6 +213,11 @@ def simulate(code_list, line_dict, instruction_set):
 			index+= 1
 
 		#AND
+		elif command == "and":
+				result = register_dict[registers[0]] and int(registers[1],0)
+				check_flags(result,flag_dict,flags_used)
+				register_dict[registers[0]] = result
+				index+= 1
 		#ANDI
 		#OR
 
@@ -352,17 +371,21 @@ def simulate(code_list, line_dict, instruction_set):
 
 		elif command == "ld":
 			register_dict[registers[0]] = sram[registers[1]]
+			index += 1
 
 
 		#LDD
 
 		elif command == "lds":
-			print(registers[0])
 			register_dict[registers[0]] = sram[registers[1]]
 			index += 1
 
 		#LDS
 		#ST
+		elif command == "st":
+			sram[registers[0]] = register_dict[registers[1]]
+			index += 1
+
 		#STD
 
 		elif command == "sts":
@@ -370,6 +393,10 @@ def simulate(code_list, line_dict, instruction_set):
 			index += 1
 
 		#LPM
+		elif command == "lpm":
+			register_dict[registers[0]] = sram[registers[1]]
+			index += 1
+
 		#ELPM
 		#SPM
 
@@ -426,6 +453,7 @@ def check_flags(result, flag_dict,flags_used):
 			flag_dict["N"] = 0
 
 def save_output(ret_list,filename):
+	filename = filename.split('.')[0]
 	out_file = open(filename+'OUT.txt','w')
 	for i in range(len(ret_list)):
 		print(ret_list[i], file=out_file)
