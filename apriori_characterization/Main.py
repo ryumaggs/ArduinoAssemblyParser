@@ -1,3 +1,4 @@
+help("modules")
 import torch
 import torch.utils.data
 import torch.nn as nn
@@ -77,7 +78,10 @@ def main(args):
         print(bcolors.OKBLUE + 'Using GPU' + str(args.gpu_id) + bcolors.ENDC)
         os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
         device = torch.device('cuda')
- 
+
+    for x, y in enumerate(data_loader):
+        print(x, y),
+
     run_wrapper = Wrapper(args, network_class, data_loader, device,True)
     if args.test:
         if args.ryu_testing:
