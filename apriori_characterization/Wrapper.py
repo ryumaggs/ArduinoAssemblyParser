@@ -11,7 +11,7 @@ import os
 import csv
 import time
 import gzip
-import scipy.optimize import curve_fit
+from scipy.optimize import curve_fit
 from Logger import SummaryPrint
 from misc import bcolors
 import misc
