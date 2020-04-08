@@ -11,7 +11,8 @@ import os
 import csv
 import time
 import gzip
-import scipy.optimize import curve_fit
+import scipy.optimize
+import curve_fit
 from Logger import SummaryPrint
 from misc import bcolors
 import misc
@@ -195,24 +196,24 @@ class Wrapper(object):
                 break
         return 0
 
-    def _ryu_iter(self, x, y, sumPrint, backwards=True): 
-        x_copy = torch.Tensor.numpy(x)
-        x_copy = x_copy.tolist()
-        #print("---------------", len(x_copy))
-        
-        x,y = x.to(self.device), y.to(self.device)
-        y_bar = self.network(x) 
-        loss_l = self.network.loss(x, y, y_bar)
-        if backwards:
-            self.optimizer.zero_grad()
-            loss_l[0].backward()
-            self.optimizer.step()
-            with open('./trainingData.txt.gz','ab') as f:
-                f.write(','.join(str(i) for i in x_copy)+','+str(y)+'\n')
-        else:
-            with open('./testingData.txt.gz','ab') as f:
-                f.write(','.join(str(i) for i in x_copy)+','+str(y)+'\n')
-        return [l.data.item() for l in loss_l]
+    # def _ryu_iter(self, x, y, sumPrint, backwards=True):
+    #     x_copy = torch.Tensor.numpy(x)
+    #     x_copy = x_copy.tolist()
+    #     #print("---------------", len(x_copy))
+    #
+    #     x,y = x.to(self.device), y.to(self.device)
+    #     y_bar = self.network(x)
+    #     loss_l = self.network.loss(x, y, y_bar)
+    #     if backwards:
+    #         self.optimizer.zero_grad()
+    #         loss_l[0].backward()
+    #         self.optimizer.step()
+    #         with open('./trainingData.txt.gz','ab') as f:
+    #             f.write(','.join(str(i) for i in x_copy)+','+str(y)+'\n')
+    #     else:
+    #         with open('./testingData.txt.gz','ab') as f:
+    #             f.write(','.join(str(i) for i in x_copy)+','+str(y)+'\n')
+    #     return [l.data.item() for l in loss_l]
 
     def run_epoch(self, data_loader, test=False, ryu_test=False):
         data_loader=self.data_loader
@@ -244,24 +245,24 @@ class Wrapper(object):
         return rets, val_rets
 
 
-    def ryu_testing(self,val=False,test=True):
-        #print("in ryu_testing")
-        #data_loader.switch_train((not test) and (self.auto))
-        #print(data_loader.dataset.train)
-        #exit(1)
-        self.sumPrint.start_epoch(self.epoch, len(self.data_loader))
-        for j, (data, target) in enumerate(self.data_loader):
-            
-            self.sumPrint.start_iter(j)
-            res = 0
-            if val == False:
-                #print("calling iter")
-                res = self._iter(data, target, self.sumPrint, backwards=False)
-            self.sumPrint.end_iter(j, res)
-        
-        rets = self.sumPrint.end_epoch()
-        val_rets = None
-        return rets, val_rets
+    # def ryu_testing(self,val=False,test=True):
+    #     #print("in ryu_testing")
+    #     #data_loader.switch_train((not test) and (self.auto))
+    #     #print(data_loader.dataset.train)
+    #     #exit(1)
+    #     self.sumPrint.start_epoch(self.epoch, len(self.data_loader))
+    #     for j, (data, target) in enumerate(self.data_loader):
+    #
+    #         self.sumPrint.start_iter(j)
+    #         res = 0
+    #         if val == False:
+    #             #print("calling iter")
+    #             res = self._iter(data, target, self.sumPrint, backwards=False)
+    #         self.sumPrint.end_iter(j, res)
+    #
+    #     rets = self.sumPrint.end_epoch()
+    #     val_rets = None
+    #     return rets, val_rets
 
     def test(self, load=True):
         #testing
@@ -278,34 +279,62 @@ class Wrapper(object):
         rets = [self.args.run_name] + rets #run name
         return rets
 
-    def ryu_test_procedure(self, load = True):
-        print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
-        self.load()
-        self.network.eval()
-        while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
-            rets, _ = self.ryu_testing(False,not self.data_loader.dataset.train)
-            print(self.num_norm, " || ", self.num_ana)
+    # def ryu_test_procedure(self, load = True):
+    #     print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
+    #     self.load()
+    #     self.network.eval()
+    #     while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
+    #         rets, _ = self.ryu_testing(False,not self.data_loader.dataset.train)
+    #         print(self.num_norm, " || ", self.num_ana)
+    #
+    #     print(len(self.norm_error))
+    #     print(len(self.ana_error))
+    #
+    #     #fit gaussian curve
+    #     if self.fit_curve == True:
+    #         p0 = [1., -1., 1., 1., -1., 1.]
+    #         bin_centres = (min(self.norm_error) + max(self.norm_error))/2
+    #         coeff, var_matrix = curve_fit(gaussx, bin_centres, self.norm_error, p0=p0)
+    #         hist_fit = gauss
+    #
+    #
+    #     rets = [self.args.run_name] + rets #run name
+    #     g_min = min(min(self.ana_error),min(self.norm_error))
+    #     g_max = max(max(self.ana_error),max(self.norm_error))
+    #     bins = np.linspace(g_min,g_max,100)
+    #     plt.hist(self.norm_error,bins,alpha=0.5,label="Norm")
+    #     plt.hist(self.ana_error,bins,alpha=0.5,label="Ano")
+    #     plt.legend(loc='upper right')
+    #     plt.savefig((str)(self.args.run_name)+"-ANO vs NORM errors.png")
+    #     return rets
 
-        print(len(self.norm_error))
-        print(len(self.ana_error))
 
-        #fit gaussian curve
-        if self.fit_curve == True:
-            p0 = [1., -1., 1., 1., -1., 1.]
-            bin_centres = (min(self.norm_error) + max(self.norm_error))/2
-            coeff, var_matrix = curve_fit(gaussx, bin_centres, self.norm_error, p0=p0)
-            hist_fit = gauss
+    def train(self):
+        x = 100
+        for epoch in range(x):  # loop over the dataset multiple times
 
- 
-        rets = [self.args.run_name] + rets #run name
-        g_min = min(min(self.ana_error),min(self.norm_error))
-        g_max = max(max(self.ana_error),max(self.norm_error))
-        bins = np.linspace(g_min,g_max,100)
-        plt.hist(self.norm_error,bins,alpha=0.5,label="Norm")
-        plt.hist(self.ana_error,bins,alpha=0.5,label="Ano")
-        plt.legend(loc='upper right')
-        plt.savefig((str)(self.args.run_name)+"-ANO vs NORM errors.png")
-        return rets
+            running_loss = 0.0
+            for i, data in enumerate(PFPSampler, 0):
+                # get the inputs; data is a list of [inputs, labels]
+                inputs, labels = data
+
+                # zero the parameter gradients
+                self.optimizer.zero_grad()
+
+                # forward + backward + optimize
+                outputs = self.network(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                self.optimizer.step()
+
+                # print statistics
+                running_loss += loss.item()
+                if i % 2000 == 1999:    # print every 2000 mini-batches
+                    print('[%d, %5d] loss: %.3f' %
+                          (epoch + 1, i + 1, running_loss / 2000))
+                    running_loss = 0.0
+
+print('Finished Training')
 
 def gaussx(x, *p):
     A1, mu1, sigma1= p
@@ -326,12 +355,12 @@ def gaussx(x, *p):
                 self.save()
         self.save()
 
-    def ryu_data_gen(self):
-        if self.args.load_checkpoint or self.args.resume or (self.args.checkpoint is not None):
-            self.load(self.args.resume)
-        data_loader = PFPSampler(self.args,train=True)
-        #print(bcolors.OKBLUE+'*******TRAINING*******'+bccolors.ENDC)
-        while self.num_norm < self.norm_limit and self.num_ana < self.ana_limit:
-            _, val_ret = self.ryu_run_epoch(data_loader, False)
-        #print('Normal: ', self.num_norm)
-        #print("Ana: ", self.num_ana)
+    # def ryu_data_gen(self):
+    #     if self.args.load_checkpoint or self.args.resume or (self.args.checkpoint is not None):
+    #         self.load(self.args.resume)
+    #     data_loader = PFPSampler(self.args,train=True)
+    #     #print(bcolors.OKBLUE+'*******TRAINING*******'+bccolors.ENDC)
+    #     while self.num_norm < self.norm_limit and self.num_ana < self.ana_limit:
+    #         _, val_ret = self.ryu_run_epoch(data_loader, False)
+    #     #print('Normal: ', self.num_norm)
+    #     #print("Ana: ", self.num_ana)
