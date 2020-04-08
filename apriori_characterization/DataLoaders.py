@@ -22,7 +22,7 @@ class PFPSampler2(Dataset):
         parser.add_argument('--window_size', type=int, default=48000, help='window size')
         parser.add_argument('--window_offset', type=float, default=1.0, help='percent of window used for offset')
         parser.add_argument('--train_percent', type=float, default=.7, help='percent of dataset used for training')
-        parser.add_argument('--data_dirs', metavar='N', type=str, nargs='+', default=['/scratch/PFPData/LogicModified/traces])
+        parser.add_argument('--data_dirs', metavar='N', type=str, nargs='+', default=['/scratch/PFPData/LogicModified/traces'])
         parser.add_argument('--samples_per', type=int, default=64, help='number of data samples taken in each file')
         parser.add_argument('--test_balancer', type=float, default=.09, help='percent of normals kept during testing')
 
