@@ -54,6 +54,7 @@ class Wrapper(object):
 
         print('Creating Network')
         self.data_loader = data_loader
+        print('data loader: ', data_loader)
         x,y = next(iter(self.data_loader))
         x_size = x.size()
         if self.num_net > 1: #if parameter is defined, will now generate a list of networks
