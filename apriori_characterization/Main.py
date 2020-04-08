@@ -69,7 +69,7 @@ def main(args):
     args = parser.parse_args(args)
     #print(not args.test)
     #exit(1)
-    data_loader = PFPSampler(args, train=not args.test)
+    data_loader = PFPSampler2(args, train=not args.test)
     if args.gpu_id == '-1':
         os.environ['CUDA_VISIBLE_DEVICES'] = ''
         device = torch.device('cpu')
@@ -78,8 +78,8 @@ def main(args):
         os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
         device = torch.device('cuda')
 
-    for x, y in enumerate(data_loader):
-        print(x, y),
+    # for x, y in enumerate(data_loader):
+    #     print(x, y)
 
     run_wrapper = Wrapper(args, network_class, data_loader, device,True)
     if args.test:
