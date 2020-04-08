@@ -22,7 +22,7 @@ class PFPSampler2(Dataset):
         parser.add_argument('--window_size', type=int, default=48000, help='window size')
         parser.add_argument('--window_offset', type=float, default=1.0, help='percent of window used for offset')
         parser.add_argument('--train_percent', type=float, default=.7, help='percent of dataset used for training')
-        parser.add_argument('--data_dirs', metavar='N', type=str, nargs='+', default=['/scratch/ryu1/PFP/AnomalyDetection/DATA/ArduinoTraces2/'])
+        parser.add_argument('--data_dirs', metavar='N', type=str, nargs='+', default=['/scratch/PFPDatassh /LogicModified_rf_Sample'])
         parser.add_argument('--samples_per', type=int, default=64, help='number of data samples taken in each file')
         parser.add_argument('--test_balancer', type=float, default=.09, help='percent of normals kept during testing')
 
@@ -99,7 +99,12 @@ class PFPSampler2(Dataset):
         if len(self.bucket)<=0:
             self._fill_bucket()
         #checking for data scale via histogram
-        g_min = min(min(self.anomalous_histo),min(self.normal_histo))
+
+        print("anom histo: ", self.anomalous_histo)
+        print("normal histo: ", self.normal_histo)
+
+
+        g_min = min(min(self.anomalous_histo), min(self.normal_histo))
         g_max = max(max(self.anomalous_histo),max(self.normal_histo))
         bins = np.linspace(g_min,g_max,100)
         plt.hist(self.normal_histo,bins,alpha=0.5,label="Norm")
