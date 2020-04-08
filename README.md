@@ -14,7 +14,45 @@ A description of "parser", which permeates all files, is given under the descrip
 - parser
 - Scipy
 
-## Description
+## Training
+Here are some example commands of how to train a network:  
+>Example Runs  
+>python Main.py trial 0 AEConv  
+>python Main.py trial1 0 ClassConv --classifier  
+>python Main.py trial2 0 ClassConv --classifier --fc_layers 34 19 2 --filter_size 5  
+
+Training a network will require a lot of time.  
+
+Networks are identified by the name given in the run command, for instance the first example run will be named "trial", the second will be named "trial 1", and the third will be named "trial2".
+
+The models themselves will be saved under a the "ckpt" folder. 
+
+As a default (and changeable) setting, the model will save itself every 50 epochs
+
+Please refer to the testing section below on policies for network name
+
+## Testing
+To test a model, one must call the exact same command as for training, with additional parameters:
+
+For instance, to train the network "trial" in the training section above, one can call:
+
+**python Main.py trial 0 AEConv --test"**
+
+I cannot stress enough that any parameters entered into the command line during training **must be re-entered** in the testing phase. In particular, setting network sizes or filter sizes will not be automatically saved by the network.
+
+For this reason, I recommend naming your network to be as descriptive as possible, with all non-default parameters in it's name.
+
+Here is an example:
+
+PEXpci-500latent-24kwindow
+
+The name above is detailed as follows:
+
+DataSetName-Parameter1-Parameter2
+
+If there were more parameters, the name would have been extended with each one.
+
+## File Descriptions
 
 You will see the following files:  
 - DataLoaders.py
