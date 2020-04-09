@@ -43,7 +43,8 @@ class PFPSampler2(Dataset):
         self.keep_label=[0]
         if self.class_conv == True:
             self.keep_label = [1,2]
-            print("keeping label 1 & 2")
+            # print("keeping label 1 & 2")
+        print("keeping labels: ", self.keep_label)
         self.list_of_files = fnmatch.filter(os.listdir(self.data_dirs[0]), "*.meta")
         self.list_of_training_files = []
         self.used_list_of_training_files = []
