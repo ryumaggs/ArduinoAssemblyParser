@@ -103,21 +103,17 @@ class PFPSampler2(Dataset):
 
         # g_min = min(min(self.anomalous_histo), min(self.normal_histo))
         # g_max = max(max(self.anomalous_histo),max(self.normal_histo))
-<<<<<<< HEAD
-        bins = np.linspace(g_min,g_max,100)
-        plt.hist(self.normal_histo,bins,alpha=0.5,label="Norm")
-        plt.hist(self.anomalous_histo,bins,alpha=0.5,label="Ano")
-        plt.legend(loc='upper right')
-        plt.savefig((str)(self.data_name)+"-Scale_check.png")
-        exit(1)
-=======
+        # bins = np.linspace(g_min,g_max,100)
+        # plt.hist(self.normal_histo,bins,alpha=0.5,label="Norm")
+        # plt.hist(self.anomalous_histo,bins,alpha=0.5,label="Ano")
+        # plt.legend(loc='upper right')
+        # plt.savefig((str
         # bins = np.linspace(g_min,g_max,100)
         # plt.hist(self.normal_histo,bins,alpha=0.5,label="Norm")
         # plt.hist(self.anomalous_histo,bins,alpha=0.5,label="Ano")
         # plt.legend(loc='upper right')
         # plt.savefig((str)(self.data_name)+"-Scale_check.png")
         # exit(1)
->>>>>>> 1ffb5d3eade717a4a212ebbebfe3dcb30fce5a66
         return torch.from_numpy(np.asarray(self.bucket.pop())),torch.tensor([self.bucket_labels.pop()])
 
     def __len__(self):

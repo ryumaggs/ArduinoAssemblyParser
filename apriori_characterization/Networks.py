@@ -27,7 +27,8 @@ class AutoConvNetwork(nn.Module):
         
         cur_channel = 1
         self.batch_size = args.batch_size
-        cur_height = x_size[2]
+	print(x_size)
+        cur_height = x_size[1]
 
 
         #encode layers
