@@ -281,7 +281,7 @@ class Wrapper(object):
         rets, _ = self.run_epoch(data_loader, True)
         rets = [self.args.run_name] + rets #run name
         print("----------------")
-        print("rets")
+        print("rets", rets)
         return rets
 
     # def ryu_test_procedure(self, load = True):
