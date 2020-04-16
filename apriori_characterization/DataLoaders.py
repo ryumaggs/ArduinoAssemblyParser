@@ -44,7 +44,6 @@ class PFPSampler2(Dataset):
         if self.class_conv == True:
             self.keep_label = [1,2]
             # print("keeping label 1 & 2")
-        print("keeping labels: ", self.keep_label)
         self.list_of_files = fnmatch.filter(os.listdir(self.data_dirs[0]), "*.meta")
         self.list_of_training_files = []
         self.used_list_of_training_files = []
@@ -85,7 +84,6 @@ class PFPSampler2(Dataset):
             self.num_files=len(self.list_of_training_files)
             shuffler=np.random.permutation(self.num_files)
             self.list_of_training_files=[self.list_of_training_files[i] for i in shuffler]
-            print("training files: ", self.list_of_training_files)
         else:
             self.num_files = len(self.list_of_testing_files)
             shuffler=np.random.permutation(self.num_files)
@@ -105,6 +103,11 @@ class PFPSampler2(Dataset):
 
         # g_min = min(min(self.anomalous_histo), min(self.normal_histo))
         # g_max = max(max(self.anomalous_histo),max(self.normal_histo))
+        # bins = np.linspace(g_min,g_max,100)
+        # plt.hist(self.normal_histo,bins,alpha=0.5,label="Norm")
+        # plt.hist(self.anomalous_histo,bins,alpha=0.5,label="Ano")
+        # plt.legend(loc='upper right')
+        # plt.savefig((str
         # bins = np.linspace(g_min,g_max,100)
         # plt.hist(self.normal_histo,bins,alpha=0.5,label="Norm")
         # plt.hist(self.anomalous_histo,bins,alpha=0.5,label="Ano")

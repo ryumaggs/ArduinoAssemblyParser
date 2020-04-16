@@ -78,9 +78,6 @@ def main(args):
         os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu_id
         device = torch.device('cuda')
 
-    # for x, y in enumerate(data_loader):
-    #     print(x, y)
-
     run_wrapper = Wrapper(args, network_class, data_loader, device,True)
     if args.test:
         if args.ryu_testing:
