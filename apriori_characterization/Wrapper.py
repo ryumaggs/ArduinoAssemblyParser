@@ -245,7 +245,7 @@ class Wrapper(object):
             val_rets = None
 
             # ........
-            for i, data in enumerate(PFPSampler, 0):
+            for i, data in enumerate(data_loader, 0):
                 # get the inputs; data is a list of [inputs, labels]
                 print("data ", data)
                 inputs, labels = data
