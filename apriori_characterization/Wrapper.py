@@ -309,32 +309,46 @@ class Wrapper(object):
     #     plt.savefig((str)(self.args.run_name)+"-ANO vs NORM errors.png")
     #     return rets
 
-
     def train(self):
-        x = 100
-        for epoch in range(x):  # loop over the dataset multiple times
+        if self.args.load_checkpoint or self.args.resume or (self.args.checkpoint is not None):
+            self.load(self.args.resume)
+        data_loader = self.data_loader
 
-            running_loss = 0.0
-            for i, data in enumerate(PFPSampler, 0):
+        print(bcolors.OKBLUE+'*******TRAINING********'+bcolors.ENDC)
+        self.network.train()
+        while self.epoch < self.args.epochs:
+            _, val_ret = self.run_epoch(data_loader, False)
+            self.epoch += 1
+            if self.epoch % self.args.checkpoint_every == 0:
+                print("Saving...")
+                self.save()
+        self.save()
 
-                # get the inputs; data is a list of [inputs, labels]
-                inputs, labels = data
-
-                # zero the parameter gradients
-                self.optimizer.zero_grad()
-
-                # forward + backward + optimize
-                outputs = self.network(inputs)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                self.optimizer.step()
-
-                # print statistics
-                running_loss += loss.item()
-                if i % 2000 == 1999:    # print every 2000 mini-batches
-                    print('[%d, %5d] loss: %.3f' %
-                          (epoch + 1, i + 1, running_loss / 2000))
-                    running_loss = 0.0
+    # def train(self):
+    #     x = 100
+    #     for epoch in range(x):  # loop over the dataset multiple times
+    #
+    #         running_loss = 0.0
+    #         for i, data in enumerate(PFPSampler, 0):
+    #
+    #             # get the inputs; data is a list of [inputs, labels]
+    #             inputs, labels = data
+    #
+    #             # zero the parameter gradients
+    #             self.optimizer.zero_grad()
+    #
+    #             # forward + backward + optimize
+    #             outputs = self.network(inputs)
+    #             loss = criterion(outputs, labels)
+    #             loss.backward()
+    #             self.optimizer.step()
+    #
+    #             # print statistics
+    #             running_loss += loss.item()
+    #             if i % 2000 == 1999:    # print every 2000 mini-batches
+    #                 print('[%d, %5d] loss: %.3f' %
+    #                       (epoch + 1, i + 1, running_loss / 2000))
+    #                 running_loss = 0.0
 
 print('Finished Training')
 
