@@ -69,7 +69,7 @@ def main(args):
     args = parser.parse_args(args)
     #print(not args.test)
     #exit(1)
-    data_loader = PFPSampler2(args, train=not args.test)
+    data_loader = PFPSampler(args, train=not args.test)
     if args.gpu_id == '-1':
         os.environ['CUDA_VISIBLE_DEVICES'] = ''
         device = torch.device('cpu')
