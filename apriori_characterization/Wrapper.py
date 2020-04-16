@@ -217,6 +217,27 @@ class Wrapper(object):
     #             f.write(','.join(str(i) for i in x_copy)+','+str(y)+'\n')
     #     return [l.data.item() for l in loss_l]
 
+    def roc(x, r_error): # run on the anomaly and the r error
+
+        fpr = dict()
+        tpr = dict()
+        roc_auc = dict()
+
+        fpr["micro"], tpr["micro"], _ = roc_curve(x, r_error, pos_label=1)
+        roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+
+        plt.figure()
+        lw = 2
+        plt.plot(fpr["micro"], tpr["micro"], color='darkorange',
+                 lw=lw, label='ROC curve (area = %0.2f)' % roc_auc["micro"])
+        plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Reconstruction Error ROC')
+        plt.legend(loc="lower right")
+
     def run_epoch(self, data_loader, test=False, ryu_test=False):
         data_loader=self.data_loader
         #data_loader.switch_train((not test) and (self.auto))
@@ -247,21 +268,16 @@ class Wrapper(object):
             # ........
             for i, data in enumerate(data_loader, 0):
                 # get the inputs; data is a list of [inputs, labels]
-                print("data ", data)
                 inputs, labels = data
-
-                # forward + backward + optimize
+                print("inputs ", type(inputs))
+                # check if the inputs are cpu or gpu tensor
                 outputs = self.network(inputs)
-                loss = self.network.loss(inputs, labels, outputs)
+                r_error,test_perc,anom_loss,norm_loss = self.network.loss(inputs, labels, outputs)
 
-
-                stat, p = shapiro(data)
-
-
-
+                stat, p = shapiro(inputs)
 
                 alpha = 0.02
-                if p > alpha:
+                if r_error > alpha:
                     print('Normal')
                 else:
                     print('Anomaly')
@@ -271,8 +287,6 @@ class Wrapper(object):
                 if i % 2000 == 1999:    # print every 2000 mini-batches
                     print('[%d, %5d] loss: %.3f' %
                           (epoch + 1, i + 1, running_loss / 2000))
-
-
 
         return rets, val_rets
 
@@ -305,6 +319,7 @@ class Wrapper(object):
         if load:
             self.load()
         #set no gradients
+        self.network.cuda()
         self.network.eval()
         #run epoch
         
