@@ -244,6 +244,36 @@ class Wrapper(object):
         else:
             val_rets = None
 
+            # ........
+            for i, data in enumerate(PFPSampler, 0):
+                # get the inputs; data is a list of [inputs, labels]
+                print("data ", data)
+                inputs, labels = data
+
+                # forward + backward + optimize
+                outputs = self.network(inputs)
+                loss = self.network.loss(inputs, labels, outputs)
+
+
+                stat, p = shapiro(data)
+
+
+
+
+                alpha = 0.02
+                if p > alpha:
+                    print('Normal')
+                else:
+                    print('Anomaly')
+
+                # print statistics
+                running_loss += loss.item()
+                if i % 2000 == 1999:    # print every 2000 mini-batches
+                    print('[%d, %5d] loss: %.3f' %
+                          (epoch + 1, i + 1, running_loss / 2000))
+
+
+
         return rets, val_rets
 
 
