@@ -316,7 +316,7 @@ class Wrapper(object):
 
             running_loss = 0.0
             print(PFPSampler.dataset)
-            for i, data in enumerate(PFPSampler.dataset, 0):
+            for i, data in enumerate(PFPSampler, 0):
 
                 # get the inputs; data is a list of [inputs, labels]
                 inputs, labels = data
