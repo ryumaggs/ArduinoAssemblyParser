@@ -269,6 +269,7 @@ class Wrapper(object):
         #testing
         print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
         data_loader = PFPSampler(self.args, train=False)
+
         #load checkpoint
         if load:
             self.load()
