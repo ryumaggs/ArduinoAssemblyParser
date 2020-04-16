@@ -18,6 +18,7 @@ from misc import bcolors
 import misc
 import matplotlib.pyplot as plt
 from DataLoaders import PFPSampler
+from scipy.stats import shapiro
 
 class Wrapper(object):
     def __init__(self, args, network_class, data_loader, device,auto,num_net = 1):
@@ -279,6 +280,8 @@ class Wrapper(object):
         
         rets, _ = self.run_epoch(data_loader, True)
         rets = [self.args.run_name] + rets #run name
+        print("----------------")
+        print("rets")
         return rets
 
     # def ryu_test_procedure(self, load = True):
