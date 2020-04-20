@@ -277,7 +277,9 @@ class Wrapper(object):
                 outputs = self.network(inputs)
                 r_error,test_perc,anom_loss,norm_loss = self.network.loss(inputs, labels, outputs)
 
-                stat, p = shapiro(inputs)
+                # convert to cpu tensor -> shapiro
+                cpu_inputs = inputs.cpu()
+                stat, p = shapiro(cpu_inputs)
 
                 alpha = 0.02
                 if r_error > alpha:
