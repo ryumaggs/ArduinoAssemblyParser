@@ -272,7 +272,7 @@ class Wrapper(object):
 
                 # load these tensors into gpu memory
                 inputs = inputs.cuda()
-                print("inputs ", inputs)
+                # print("inputs ", inputs)
                 # check if the inputs are cpu or gpu tensor
                 outputs = self.network(inputs)
                 r_error,test_perc,anom_loss,norm_loss = self.network.loss(inputs, labels, outputs)
