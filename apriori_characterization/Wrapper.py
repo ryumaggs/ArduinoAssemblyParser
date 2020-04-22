@@ -223,13 +223,13 @@ class Wrapper(object):
         tpr = dict()
         roc_auc = dict()
 
-        fpr["micro"], tpr["micro"], _ = roc_curve(x, r_error, pos_label=1)
-        roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+        fpr, tpr, _ = roc_curve(x, r_error, pos_label=1)
+        roc_auc= auc(fpr, tpr)
 
         plt.figure()
         lw = 2
-        plt.plot(fpr["micro"], tpr["micro"], color='darkorange',
-                 lw=lw, label='ROC curve (area = %0.2f)' % roc_auc["micro"])
+        plt.plot(fpr, tpr, color='darkorange',
+                 lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
         plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.05])
@@ -239,9 +239,11 @@ class Wrapper(object):
         plt.legend(loc="lower right")
 
     def run_epoch(self, data_loader, test=False, ryu_test=False):
+
         data_loader=self.data_loader
         #data_loader.switch_train((not test) and (self.auto))
         self.sumPrint.start_epoch(self.epoch, len(data_loader))
+
         for j, (data, target) in enumerate(data_loader):
             self.sumPrint.start_iter(j)
             res = self._iter(data, target, self.sumPrint, backwards=not test)
@@ -267,6 +269,7 @@ class Wrapper(object):
 
             # ........
             for i, data in enumerate(data_loader, 0):
+                print(i)
                 # get the inputs; data is a list of [inputs, labels]
                 inputs, labels = data
 
