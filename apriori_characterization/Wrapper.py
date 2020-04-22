@@ -280,9 +280,10 @@ class Wrapper(object):
                 # convert to cpu tensor -> shapiro
                 cpu_inputs = inputs.cpu()
                 stat, p = shapiro(cpu_inputs)
-                print(r_error)
+                print("stat: ", stat)
+                print("p: ", p)
                 alpha = 0.02
-                if r_error > alpha:
+                if p > alpha:
                     print('Normal')
                 else:
                     print('Anomaly')
