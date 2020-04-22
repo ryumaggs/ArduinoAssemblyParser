@@ -272,7 +272,8 @@ class Wrapper(object):
                 print(i)
                 # get the inputs; data is a list of [inputs, labels]
                 inputs, labels = data
-
+                print(inputs)
+                print(labels)
                 # load these tensors into gpu memory
                 inputs = inputs.cuda()
                 # print("inputs ", inputs)
