@@ -289,8 +289,8 @@ class Wrapper(object):
                 inputs.append(input)
                 r.append(r_error)
                 # convert to cpu tensor -> shapiro
-                cpu_inputs = inputs.cpu()
-                stat, p = shapiro(cpu_inputs)
+                cpu_input = input.cpu()
+                stat, p = shapiro(cpu_input)
                 print("stat: ", stat)
                 print("p: ", p)
                 print("r_error: ", r_error)
