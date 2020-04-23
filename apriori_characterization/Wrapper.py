@@ -271,16 +271,20 @@ class Wrapper(object):
             inputs = []
             r = []
             # ........
+
+
+            # NOTE what data should i fit to gaussian
+
             for i, data in enumerate(data_loader, 0):
                 print(i)
                 # get the inputs; data is a list of [inputs, labels]
                 input, label = data
 
                 # load these tensors into gpu memory
-                inputs = inputs.cuda()
+                input = input.cuda()
                 # print("inputs ", inputs)
                 # check if the inputs are cpu or gpu tensor
-                outputs = self.network(inputs)
+                outputs = self.network(input)
                 r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
                 inputs.append(input)
                 r.append(r_error)
