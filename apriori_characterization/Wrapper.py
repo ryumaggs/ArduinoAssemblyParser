@@ -284,7 +284,7 @@ class Wrapper(object):
                 input = input.cuda()
                 # print("inputs ", inputs)
                 # check if the inputs are cpu or gpu tensor
-                outputs = self.network(input)
+                output = self.network(input)
                 r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
                 inputs.append(input)
                 r.append(r_error)
