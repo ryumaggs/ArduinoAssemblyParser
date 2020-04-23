@@ -286,6 +286,7 @@ class Wrapper(object):
                 stat, p = shapiro(cpu_inputs)
                 print("stat: ", stat)
                 print("p: ", p)
+                print("r_error: ", r_error)
                 alpha = 0.02
                 if p > alpha:
                     print('Normal')
