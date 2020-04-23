@@ -240,6 +240,7 @@ class Wrapper(object):
 
     def run_epoch(self, data_loader, test=False, ryu_test=False):
 
+
         data_loader=self.data_loader
         #data_loader.switch_train((not test) and (self.auto))
         self.sumPrint.start_epoch(self.epoch, len(data_loader))
@@ -267,20 +268,22 @@ class Wrapper(object):
         else:
             val_rets = None
 
+            inputs = []
+            r = []
             # ........
             for i, data in enumerate(data_loader, 0):
                 print(i)
                 # get the inputs; data is a list of [inputs, labels]
-                inputs, labels = data
-                print(inputs)
-                print(labels)
+                input, label = data
+
                 # load these tensors into gpu memory
                 inputs = inputs.cuda()
                 # print("inputs ", inputs)
                 # check if the inputs are cpu or gpu tensor
                 outputs = self.network(inputs)
-                r_error,test_perc,anom_loss,norm_loss = self.network.loss(inputs, labels, outputs)
-
+                r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
+                inputs.append(input)
+                r.append(r_error)
                 # convert to cpu tensor -> shapiro
                 cpu_inputs = inputs.cpu()
                 stat, p = shapiro(cpu_inputs)
@@ -293,11 +296,8 @@ class Wrapper(object):
                 else:
                     print('Anomaly')
 
-                # print statistics
-                # running_loss += loss.item()
-                # if i % 2000 == 1999:    # print every 2000 mini-batches
-                #     print('[%d, %5d] loss: %.3f' %
-                #           (epoch + 1, i + 1, running_loss / 2000))
+            roc(inputs, r)
+
 
         return rets, val_rets
 
