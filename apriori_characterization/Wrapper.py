@@ -388,8 +388,9 @@ class Wrapper(object):
 
         print('beginning..')
         r = []
-        print(data_loader.)
-        for i, data in enumerate(data_loader, 0):
+        enum = enumerate(data_loader, 0)
+        print(enum)
+        for i, data in enum:
             print(i)
             # get the inputs; data is a list of [inputs, labels]
             input, label = data
