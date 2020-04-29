@@ -19,6 +19,7 @@ import misc
 import matplotlib.pyplot as plt
 from DataLoaders import PFPSampler
 from scipy.stats import shapiro
+from scipy.stats import norm
 
 class Wrapper(object):
     def __init__(self, args, network_class, data_loader, device,auto,num_net = 1):
@@ -217,6 +218,40 @@ class Wrapper(object):
     #             f.write(','.join(str(i) for i in x_copy)+','+str(y)+'\n')
     #     return [l.data.item() for l in loss_l]
 
+
+    def gather_recon(self):
+        data_loader=self.data_loader
+        data_loader.switch_train(False)
+
+        r = []
+        for i, data in enumerate(data_loader, 0):
+            print(i)
+            # get the inputs; data is a list of [inputs, labels]
+            input, label = data
+            # load these tensors into gpu memory
+            input = input.cuda()
+            # check if the inputs are cpu or gpu tensor
+            output = self.network(input)
+            r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
+            inputs.append(input)
+            r.append(r_error)
+
+        return r
+
+    def fit_recon(self, r):
+        mean, var = norm.stats(r)
+        range = [mean + var, mean - var]
+        anom = []
+        for error in r:
+            if error > range[0] or error < range[1]
+                anom.append(True)
+            else:
+                anom.append(False)
+
+        print(r)
+        print(anom)
+        return anom
+
     def roc(x, r_error): # run on the anomaly and the r error
 
         fpr = dict()
@@ -274,6 +309,14 @@ class Wrapper(object):
 
 
             # NOTE what data should i fit to gaussian
+
+            # fit recon error to the gaussian
+            # run it separately from training on normal data
+            # restrict class data to normal only then record recon error I get & find params
+            # find avg & std of sample ?
+
+            # folder for plots save plots in there
+
 
             for i, data in enumerate(data_loader, 0):
                 print(i)
@@ -337,7 +380,12 @@ class Wrapper(object):
         self.network.cuda()
         self.network.eval()
         #run epoch
-        
+
+        r = gather_recon()
+        anom = fit_recon(r)
+
+
+
         rets, _ = self.run_epoch(data_loader, True)
         rets = [self.args.run_name] + rets #run name
         print("----------------")
