@@ -243,7 +243,7 @@ class Wrapper(object):
         range = [mean + var, mean - var]
         anom = []
         for error in r:
-            if error > range[0] or error < range[1]
+            if error > range[0] or error < range[1]:
                 anom.append(True)
             else:
                 anom.append(False)
