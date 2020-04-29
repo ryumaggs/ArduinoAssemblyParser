@@ -388,6 +388,7 @@ class Wrapper(object):
 
         print('beginning..')
         r = []
+        print(data_loader.)
         for i, data in enumerate(data_loader, 0):
             print(i)
             # get the inputs; data is a list of [inputs, labels]
@@ -398,6 +399,7 @@ class Wrapper(object):
             output = self.network(input)
             r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
             # inputs.append(input)
+            print(r_error)
             r.append(r_error)
 
         # anom = fit_recon(r)
