@@ -371,18 +371,22 @@ class Wrapper(object):
         print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
         data_loader = PFPSampler(self.args, train=False)
 
+
         #load checkpoint
         if load:
             self.load()
         #set no gradients
+        print('setting no grad')
         self.network.cuda()
         self.network.eval()
         #run epoch
 
         # r = gather_recon()
+        print('getting data loader')
         data_loader=self.data_loader
         data_loader.switch_train(False)
 
+        print('beginning..')
         r = []
         for i, data in enumerate(data_loader, 0):
             print(i)
