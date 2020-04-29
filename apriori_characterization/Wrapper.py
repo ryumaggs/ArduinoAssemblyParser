@@ -217,8 +217,6 @@ class Wrapper(object):
     #         with open('./testingData.txt.gz','ab') as f:
     #             f.write(','.join(str(i) for i in x_copy)+','+str(y)+'\n')
     #     return [l.data.item() for l in loss_l]
-
-
     def gather_recon(self):
         data_loader=self.data_loader
         data_loader.switch_train(False)
@@ -383,9 +381,7 @@ class Wrapper(object):
 
         r = gather_recon()
         anom = fit_recon(r)
-
-
-
+        print("successful")
         rets, _ = self.run_epoch(data_loader, True)
         rets = [self.args.run_name] + rets #run name
         print("----------------")
