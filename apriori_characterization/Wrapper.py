@@ -379,9 +379,36 @@ class Wrapper(object):
         self.network.eval()
         #run epoch
 
-        r = gather_recon()
-        anom = fit_recon(r)
-        print("successful")
+        # r = gather_recon()
+        data_loader=self.data_loader
+        data_loader.switch_train(False)
+
+        r = []
+        for i, data in enumerate(data_loader, 0):
+            print(i)
+            # get the inputs; data is a list of [inputs, labels]
+            input, label = data
+            # load these tensors into gpu memory
+            input = input.cuda()
+            # check if the inputs are cpu or gpu tensor
+            output = self.network(input)
+            r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
+            inputs.append(input)
+            r.append(r_error)
+
+        # anom = fit_recon(r)
+
+        mean, var = norm.stats(r)
+        range = [mean + var, mean - var]
+        anom = []
+        for error in r:
+            if error > range[0] or error < range[1]:
+                anom.append(True)
+            else:
+                anom.append(False)
+
+        print(r)
+        print(anom)
         rets, _ = self.run_epoch(data_loader, True)
         rets = [self.args.run_name] + rets #run name
         print("----------------")
