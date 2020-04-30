@@ -402,12 +402,10 @@ class Wrapper(object):
                 output = self.network(input)
                 r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
                 # inputs.append(input)
-                print(r_error)
-                print(r_error.data)
                 r_item = r_error.item()
                 print(r_item)
 
-                r.append(r_error.data[0])
+                r.append(r_item)
 
         # anom = fit_recon(r)
         print(type(r))
