@@ -442,6 +442,8 @@ class Wrapper(object):
 
         plt.show()
         plt.savefig('fit.png')
+
+        print("SAVED FIGURE")
         for error in r:
             print(error)
             if error > range[0] or error < range[1]:
