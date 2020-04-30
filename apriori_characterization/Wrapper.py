@@ -407,7 +407,8 @@ class Wrapper(object):
 
         # anom = fit_recon(r)
         print(type(r))
-        mean, var = norm.stats(r)
+        np_r = np.array(r)
+        mean, var = norm.stats(np_r)
         range = [mean + var, mean - var]
         anom = []
         for error in r:
