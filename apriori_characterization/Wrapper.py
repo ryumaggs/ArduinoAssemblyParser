@@ -407,6 +407,19 @@ class Wrapper(object):
 
                 r.append(r_item)
 
+        # Plot the histogram.
+        plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
+
+        # Plot the PDF.
+        xmin, xmax = plt.xlim()
+        x = np.linspace(xmin, xmax, 100)
+        p = norm.pdf(x, mu, std)
+        plt.plot(x, p, 'k', linewidth=2)
+        title = "Fit results: mu = %.2f,  std = %.2f" % (mu, std)
+        plt.title(title)
+
+        plt.show()
+        plt.savefig('/pics/fit.png')
         # anom = fit_recon(r)
         print(type(r))
         np_r = np.array(r)
@@ -415,6 +428,7 @@ class Wrapper(object):
         range = [mean + var, mean - var]
         anom = []
         for error in r:
+            print(error)
             if error > range[0] or error < range[1]:
                 anom.append(True)
             else:
