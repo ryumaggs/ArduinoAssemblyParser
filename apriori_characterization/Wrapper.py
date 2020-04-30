@@ -404,7 +404,7 @@ class Wrapper(object):
         print("SAVED FIGURE")
         print(range)
 
-        data_loader.switch_train(test)
+        data_loader.switch_train(True)
         r = []
         labels = []
         enum = enumerate(data_loader, 0)
