@@ -422,7 +422,8 @@ class Wrapper(object):
         return rets
 
 def roc(labels, r_error):
-
+    print(len(labels))
+    print(len(r_error))
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
