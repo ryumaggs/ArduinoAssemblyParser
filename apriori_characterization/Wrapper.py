@@ -415,8 +415,8 @@ class Wrapper(object):
         mu, std = norm.stats(np_r)
         range = [mu + std, mu - std]
         anom = []
-        print("mu type: ", type(mu))
-        print("std type: ", type(std))
+        print("mu type: ", type(mu), mu)
+        print("std type: ", type(std), std)
         # Plot the histogram.
         plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
 
