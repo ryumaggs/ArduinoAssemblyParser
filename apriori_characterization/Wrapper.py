@@ -435,7 +435,7 @@ class Wrapper(object):
         # Plot the histogram.
         plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
 
-        mu, std_ = norm.fit(data)
+        mu, std_ = norm.fit(r)
 
         # Plot the PDF.
         xmin, xmax = plt.xlim()
