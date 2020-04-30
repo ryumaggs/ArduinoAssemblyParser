@@ -250,29 +250,6 @@ class Wrapper(object):
         print(anom)
         return anom
 
-    def roc(labels, r_error): # run on the anomaly and the r error
-
-        fpr = dict()
-        tpr = dict()
-        roc_auc = dict()
-
-        fpr, tpr, _ = roc_curve(labels, r_error, pos_label=1)
-        roc_auc= auc(fpr, tpr)
-
-        plt.figure()
-        lw = 2
-        plt.plot(fpr, tpr, color='darkorange',
-                 lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
-        plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-        plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title('Reconstruction Error ROC')
-        plt.legend(loc="lower right")
-        currentDirectory = os.getcwd()
-        plt.savefig(currentDirectory + '/ROC.png')
-
     def run_epoch(self, data_loader, test=False, ryu_test=False):
 
 
@@ -437,13 +414,34 @@ class Wrapper(object):
         roc(labels, pred_labels)
 
 
-
         rets, _ = self.run_epoch(data_loader, True, labels, r)
         rets = [self.args.run_name] + rets #run name
         print("----------------")
         print("rets", rets)
         return rets
 
+def roc(labels, r_error): # run on the anomaly and the r error
+
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+
+    fpr, tpr, _ = roc_curve(labels, r_error, pos_label=1)
+    roc_auc= auc(fpr, tpr)
+
+    plt.figure()
+    lw = 2
+    plt.plot(fpr, tpr, color='darkorange',
+             lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Reconstruction Error ROC')
+    plt.legend(loc="lower right")
+    currentDirectory = os.getcwd()
+    plt.savefig(currentDirectory + '/ROC.png')
     # def ryu_test_procedure(self, load = True):
     #     print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
     #     self.load()
