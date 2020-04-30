@@ -383,6 +383,8 @@ class Wrapper(object):
         print("SAVED FIGURE")
         print(range)
 
+        data_loader=self.data_loader
+
         data_loader.switch_train(True)
         r = []
         labels = []
