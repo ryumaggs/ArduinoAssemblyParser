@@ -421,14 +421,16 @@ class Wrapper(object):
         print("rets", rets)
         return rets
 
-def roc(labels, r_error): # run on the anomaly and the r error
+def roc(labels, r_error):
 
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
 
     fpr, tpr, _ = metrics.roc_curve(labels, r_error, pos_label=1)
-    roc_auc= auc(fpr, tpr)
+    print(fpr)
+    print(tpr)
+    roc_auc = auc(fpr, tpr)
 
     plt.figure()
     lw = 2
