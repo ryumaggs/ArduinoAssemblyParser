@@ -413,7 +413,19 @@ class Wrapper(object):
         np_r = np.array(r)
         print(type(np_r))
         mu, std = norm.stats(np_r)
-        range = [mu + std, mu - std]
+
+        sum = 0
+        len = 0
+        for el in mu:
+            sum += el
+            len += 1
+
+        mean = sum / len
+
+        std_list = std.tolist()
+        std = std_list[0]
+
+        range = [mean + std, mean - std]
         anom = []
         print("mu type: ", type(mu), mu)
         print("std type: ", type(std), std)
@@ -425,7 +437,7 @@ class Wrapper(object):
         x = np.linspace(xmin, xmax, 4)
         p = norm.pdf(x, mu, std)
         plt.plot(x, p, 'k', linewidth=2)
-        title = "Fit results: mu = %.2f,  std = %.2f" % (mu, std)
+        title = "Fit results: mu = %.2f,  std = %.2f" % (mean, std)
         plt.title(title)
 
         plt.show()
