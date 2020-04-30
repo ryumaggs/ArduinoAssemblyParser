@@ -347,6 +347,7 @@ class Wrapper(object):
         r = []
         labels = []
         enum = enumerate(data_loader, 0)
+        enum2 = enum
 
         for i, data in enum:
             # if i == 4:
@@ -408,7 +409,7 @@ class Wrapper(object):
         r = []
         labels = []
 
-        for i, data in enumerate(data_loader, 0):
+        for i, data in enum2:
             input, label = data
             labels.append(label)
             # load these tensors into gpu memory
