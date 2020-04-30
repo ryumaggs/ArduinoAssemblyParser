@@ -407,7 +407,7 @@ class Wrapper(object):
 
             r.append(r_item)
 
-
+        r_len = len(r)
         # anom = fit_recon(r)
         print(type(r))
         np_r = np.array(r)
@@ -434,10 +434,10 @@ class Wrapper(object):
 
         # Plot the PDF.
         xmin, xmax = plt.xlim()
-        x = np.linspace(xmin, xmax, 32)
+        x = np.linspace(xmin, xmax, r_len)
         p = norm.pdf(x, mu, std)
         plt.plot(x, p, 'k', linewidth=2)
-        title = "Fit results: mu = %.2f,  std = %.2f" % (mean, std_val)
+        title = "Fit results: mu = %.2f,  std = %.2f" % (mu, std_val)
         plt.title(title)
 
         plt.show()
