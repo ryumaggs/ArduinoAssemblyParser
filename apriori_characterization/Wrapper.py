@@ -435,12 +435,15 @@ class Wrapper(object):
         # Plot the histogram.
         plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
 
-        mu, std_ = norm.fit(r)
-
+        mu, std_norm = norm.fit(r)
+        print("MU: ", mu)
+        print("MEAN: ", mean)
+        print("STD_NORM: ", std_norm)
+        print("STD: ", std)
         # Plot the PDF.
         xmin, xmax = plt.xlim()
         x =  np.sort(r)#np.linspace(xmin, xmax, r_len)
-        p = norm.pdf(x, mu, std_)
+        p = norm.pdf(x, mu, std_norm)
         plt.plot(x, p, 'k', linewidth=2)
         title = "Fit results: mu = %.2f,  std = %.2f" % (mean, std)
         plt.title(title)
