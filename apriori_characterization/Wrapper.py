@@ -407,6 +407,15 @@ class Wrapper(object):
 
                 r.append(r_item)
 
+
+        # anom = fit_recon(r)
+        print(type(r))
+        np_r = np.array(r)
+        print(type(np_r))
+        mu, var = norm.stats(np_r)
+        range = [mu + var, mu - var]
+        anom = []
+
         # Plot the histogram.
         plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
 
@@ -420,13 +429,6 @@ class Wrapper(object):
 
         plt.show()
         plt.savefig('/pics/fit.png')
-        # anom = fit_recon(r)
-        print(type(r))
-        np_r = np.array(r)
-        print(type(np_r))
-        mean, var = norm.stats(np_r)
-        range = [mean + var, mean - var]
-        anom = []
         for error in r:
             print(error)
             if error > range[0] or error < range[1]:
