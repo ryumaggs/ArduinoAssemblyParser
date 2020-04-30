@@ -427,7 +427,7 @@ def roc(labels, r_error): # run on the anomaly and the r error
     tpr = dict()
     roc_auc = dict()
 
-    fpr, tpr, _ = roc_curve(labels, r_error, pos_label=1)
+    fpr, tpr, _ = metrics.roc_curve(labels, r_error, pos_label=1)
     roc_auc= auc(fpr, tpr)
 
     plt.figure()
