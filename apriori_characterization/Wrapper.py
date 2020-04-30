@@ -407,7 +407,6 @@ class Wrapper(object):
         data_loader.switch_train(True)
         r = []
         labels = []
-        enum = enumerate(data_loader, 0)
 
         for i, data in enumerate(data_loader, 0):
             input, label = data
