@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 from DataLoaders import PFPSampler
 from scipy.stats import shapiro
 from scipy.stats import norm
+from sklearn import metrics
 
 class Wrapper(object):
     def __init__(self, args, network_class, data_loader, device,auto,num_net = 1):
