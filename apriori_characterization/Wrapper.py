@@ -423,12 +423,12 @@ class Wrapper(object):
         mean = sum / len
 
         std_list = std.tolist()
-        std = std_list[0]
+        std_val = std_list[0]
 
         range = [mean + std, mean - std]
         anom = []
-        print("mu type: ", type(mu), mu)
-        print("std type: ", type(std), std)
+        print("mu type: ", type(mean), mean)
+        print("std type: ", type(std_val), std_val)
         # Plot the histogram.
         plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
 
@@ -437,7 +437,7 @@ class Wrapper(object):
         x = np.linspace(xmin, xmax, 4)
         p = norm.pdf(x, mu, std)
         plt.plot(x, p, 'k', linewidth=2)
-        title = "Fit results: mu = %.2f,  std = %.2f" % (mean, std)
+        title = "Fit results: mu = %.2f,  std = %.2f" % (mean, std_val)
         plt.title(title)
 
         plt.show()
