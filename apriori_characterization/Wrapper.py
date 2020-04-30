@@ -389,7 +389,9 @@ class Wrapper(object):
         print('beginning..')
         r = []
         enum = enumerate(data_loader, 0)
-        print(enum)
+        iter = enum
+        x = sum(1 for _ in iter)
+        print("length: ", x)
         for i, data in enum:
             print(i)
             # get the inputs; data is a list of [inputs, labels]
