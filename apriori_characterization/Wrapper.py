@@ -434,7 +434,7 @@ class Wrapper(object):
 
         # Plot the PDF.
         xmin, xmax = plt.xlim()
-        x = np.linspace(xmin, xmax, 25)
+        x = np.linspace(xmin, xmax, 32)
         p = norm.pdf(x, mu, std)
         plt.plot(x, p, 'k', linewidth=2)
         title = "Fit results: mu = %.2f,  std = %.2f" % (mean, std_val)
