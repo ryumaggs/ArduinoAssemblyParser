@@ -428,17 +428,19 @@ class Wrapper(object):
         # std_list = std.tolist()
         # std_val = std_list[0]
 
-        range = [mean + std_val, mean - std_val]
+        range = [mean + std, mean - std]
         anom = []
         print("mu type: ", type(mean), mean)
         print("std type: ", type(std), std)
         # Plot the histogram.
         plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
 
+        mu, std_ = norm.fit(data)
+
         # Plot the PDF.
         xmin, xmax = plt.xlim()
         x =  np.sort(r)#np.linspace(xmin, xmax, r_len)
-        p = norm.pdf(x, mu, std)
+        p = norm.pdf(x, mu, std_)
         plt.plot(x, p, 'k', linewidth=2)
         title = "Fit results: mu = %.2f,  std = %.2f" % (mean, std)
         plt.title(title)
