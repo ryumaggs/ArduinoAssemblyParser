@@ -250,13 +250,13 @@ class Wrapper(object):
         print(anom)
         return anom
 
-    def roc(x, r_error): # run on the anomaly and the r error
+    def roc(labels, r_error): # run on the anomaly and the r error
 
         fpr = dict()
         tpr = dict()
         roc_auc = dict()
 
-        fpr, tpr, _ = roc_curve(x, r_error, pos_label=1)
+        fpr, tpr, _ = roc_curve(labels, r_error, pos_label=1)
         roc_auc= auc(fpr, tpr)
 
         plt.figure()
@@ -270,6 +270,8 @@ class Wrapper(object):
         plt.ylabel('True Positive Rate')
         plt.title('Reconstruction Error ROC')
         plt.legend(loc="lower right")
+        currentDirectory = os.getcwd()
+        plt.savefig(currentDirectory + '/ROC.png')
 
     def run_epoch(self, data_loader, test=False, ryu_test=False):
 
@@ -299,49 +301,9 @@ class Wrapper(object):
 
             val_rets = self.validSumPrint.end_epoch()
         else:
-            val_rets = None
-
-            inputs = []
-            r = []
-            # ........
 
 
-            # NOTE what data should i fit to gaussian
 
-            # fit recon error to the gaussian
-            # run it separately from training on normal data
-            # restrict class data to normal only then record recon error I get & find params
-            # find avg & std of sample ?
-
-            # folder for plots save plots in there
-
-
-            for i, data in enumerate(data_loader, 0):
-                print(i)
-                # get the inputs; data is a list of [inputs, labels]
-                input, label = data
-
-                # load these tensors into gpu memory
-                input = input.cuda()
-                # print("inputs ", inputs)
-                # check if the inputs are cpu or gpu tensor
-                output = self.network(input)
-                r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
-                inputs.append(input)
-                r.append(r_error)
-                # convert to cpu tensor -> shapiro
-                cpu_input = input.cpu()
-                stat, p = shapiro(cpu_input)
-                print("stat: ", stat)
-                print("p: ", p)
-                print("r_error: ", r_error)
-                alpha = 0.02
-                if p > alpha:
-                    print('Normal')
-                else:
-                    print('Anomaly')
-
-            roc(inputs, r)
 
 
         return rets, val_rets
@@ -388,6 +350,7 @@ class Wrapper(object):
 
         print('beginning..')
         r = []
+        labels = []
         enum = enumerate(data_loader, 0)
 
         for i, data in enum:
@@ -396,6 +359,7 @@ class Wrapper(object):
             # else:
             # get the inputs; data is a list of [inputs, labels]
             input, label = data
+            labels.append(label)
             # load these tensors into gpu memory
             input = input.cuda()
             # check if the inputs are cpu or gpu tensor
@@ -416,17 +380,6 @@ class Wrapper(object):
 
         mean = np.mean(r)
         std = np.std(r)
-
-        # sum = 0
-        # length = 0
-        # for el in mu:
-        #     sum += el
-        #     length += 1
-        #
-        # mean = sum / length
-
-        # std_list = std.tolist()
-        # std_val = std_list[0]
 
         range = [mean + std, mean - std]
         anom = []
@@ -455,16 +408,42 @@ class Wrapper(object):
 
         print("SAVED FIGURE")
         print(range)
-        for error in r:
-            print(error)
-            if error > range[0] or error < range[1]:
-                anom.append(True)
-            else:
-                anom.append(False)
 
-        print(r)
-        print(anom)
-        rets, _ = self.run_epoch(data_loader, True)
+        data_loader.switch_train(test)
+        r = []
+        labels = []
+        enum = enumerate(data_loader, 0)
+
+        for i, data in enumerate(data_loader, 0):
+            input, label = data
+            labels.append(label)
+            # load these tensors into gpu memory
+            input = input.cuda()
+            # check if the inputs are cpu or gpu tensor
+            output = self.network(input)
+            r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
+            # inputs.append(input)
+            r_item = r_error.item()
+            print(r_item)
+
+            r.append(r_item)
+
+        cut_off = std * 3
+        lower, upper = mean - cut_off, mean + cut_off
+        outliers = [err for err in r if err < lower or err > upper]
+
+        pred_labels = []
+        for err in r:
+            if err < lower or err > upper:
+                pred_labels.append(True)
+            else:
+                pred_labels.append(False)
+
+        roc(labels, pred_labels)
+
+
+
+        rets, _ = self.run_epoch(data_loader, True, labels, r)
         rets = [self.args.run_name] + rets #run name
         print("----------------")
         print("rets", rets)
