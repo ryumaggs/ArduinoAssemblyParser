@@ -391,21 +391,21 @@ class Wrapper(object):
         enum = enumerate(data_loader, 0)
 
         for i, data in enum:
-            if i == 4:
-                break
-            else:
-                # get the inputs; data is a list of [inputs, labels]
-                input, label = data
-                # load these tensors into gpu memory
-                input = input.cuda()
-                # check if the inputs are cpu or gpu tensor
-                output = self.network(input)
-                r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
-                # inputs.append(input)
-                r_item = r_error.item()
-                print(r_item)
+            # if i == 4:
+            #     break
+            # else:
+            # get the inputs; data is a list of [inputs, labels]
+            input, label = data
+            # load these tensors into gpu memory
+            input = input.cuda()
+            # check if the inputs are cpu or gpu tensor
+            output = self.network(input)
+            r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
+            # inputs.append(input)
+            r_item = r_error.item()
+            print(r_item)
 
-                r.append(r_item)
+            r.append(r_item)
 
 
         # anom = fit_recon(r)
