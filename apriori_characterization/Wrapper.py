@@ -415,12 +415,12 @@ class Wrapper(object):
         mu, std = norm.stats(np_r)
 
         sum = 0
-        len = 0
+        length = 0
         for el in mu:
             sum += el
-            len += 1
+            length += 1
 
-        mean = sum / len
+        mean = sum / length
 
         std_list = std.tolist()
         std_val = std_list[0]
