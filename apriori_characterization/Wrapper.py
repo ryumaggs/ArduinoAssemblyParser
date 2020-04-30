@@ -441,7 +441,8 @@ class Wrapper(object):
         plt.title(title)
 
         plt.show()
-        plt.savefig('fit.png')
+        currentDirectory = os.getcwd()
+        plt.savefig(currentDirectory + '/fit.png')
 
         print("SAVED FIGURE")
         for error in r:
