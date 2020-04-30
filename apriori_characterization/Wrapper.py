@@ -300,11 +300,6 @@ class Wrapper(object):
             self.network.train()
 
             val_rets = self.validSumPrint.end_epoch()
-        else:
-
-
-
-
 
         return rets, val_rets
 
