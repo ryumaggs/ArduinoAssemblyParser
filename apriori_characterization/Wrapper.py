@@ -425,7 +425,7 @@ class Wrapper(object):
         std_list = std.tolist()
         std_val = std_list[0]
 
-        range = [mean + std, mean - std]
+        range = [mean + std_val, mean - std_val]
         anom = []
         print("mu type: ", type(mean), mean)
         print("std type: ", type(std_val), std_val)
@@ -442,9 +442,11 @@ class Wrapper(object):
 
         plt.show()
         currentDirectory = os.getcwd()
+        print(currentDirectory)
         plt.savefig(currentDirectory + '/fit.png')
 
         print("SAVED FIGURE")
+        print(range)
         for error in r:
             print(error)
             if error > range[0] or error < range[1]:
