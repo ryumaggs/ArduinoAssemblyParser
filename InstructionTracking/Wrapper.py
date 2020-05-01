@@ -278,6 +278,22 @@ class Wrapper(object):
         rets = [self.args.run_name] + rets #run name
         return rets
 
+    def train(self):
+        if self.args.load_checkpoint or self.args.resume or (self.args.checkpoint is not None):
+            self.load(self.args.resume)
+        data_loader = self.data_loader
+
+        print(bcolors.OKBLUE+'*******TRAINING********'+bcolors.ENDC)
+        self.network.train()
+        while self.epoch < self.args.epochs:
+            _, val_ret = self.run_epoch(data_loader, False)
+            self.epoch += 1
+            if self.epoch % self.args.checkpoint_every == 0:
+                print("Saving...")
+                self.save()
+        self.save()
+
+
     def ryu_test_procedure(self, load = True):
         print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
         self.load()

@@ -17,13 +17,13 @@ import matplotlib.pyplot as plt
 class PFPSampler2(Dataset):
     @staticmethod
     def add_args(parser):
-        parser.add_argument('--files_per_bucket', type=int, default=8, help='n files per bucket fill')
-        parser.add_argument('--datalen', type=int, default=16384, help= 'epoch size')
-        parser.add_argument('--window_size', type=int, default=48000, help='window size')
+        parser.add_argument('--files_per_bucket', type=int, default=9, help=' per bucket fill')
+        parser.add_argument('--datalen', type=int, default=512, help= 'epoch size')
+        parser.add_argument('--window_size', type=int, default=100000, help='window size')
         parser.add_argument('--window_offset', type=float, default=1.0, help='percent of window used for offset')
         parser.add_argument('--train_percent', type=float, default=.7, help='percent of dataset used for training')
-        parser.add_argument('--data_dirs', metavar='N', type=str, nargs='+', default=['/scratch/ryu1/PFP/AnomalyDetection/DATA/ArduinoTraces2/'])
-        parser.add_argument('--samples_per', type=int, default=64, help='number of data samples taken in each file')
+        parser.add_argument('--data_dirs', metavar='N', type=str, nargs='+', default=['/scratch/PFPData/LogicModified/traces/'])    #LogicModified/traces/']) #basic_test_rf/traces/'])
+        parser.add_argument('--samples_per', type=int, default=4, help='number of data samples taken in each file')
         parser.add_argument('--test_balancer', type=float, default=.09, help='percent of normals kept during testing')
 
     def __init__(self, args,train):
@@ -42,7 +42,7 @@ class PFPSampler2(Dataset):
         self.data_dirs.extend(args.data_dirs)
         self.keep_label=[0]
         if self.class_conv == True:
-            self.keep_label = [1,2]
+            self.keep_label = [0,1,2]
         self.list_of_files = fnmatch.filter(os.listdir(self.data_dirs[0]), "*.meta")
         self.list_of_training_files = []
         self.used_list_of_training_files = []
@@ -98,15 +98,9 @@ class PFPSampler2(Dataset):
     def __getitem__(self, index):
         if len(self.bucket)<=0:
             self._fill_bucket()
-        #checking for data scale via histogram
-        g_min = min(min(self.anomalous_histo),min(self.normal_histo))
-        g_max = max(max(self.anomalous_histo),max(self.normal_histo))
-        bins = np.linspace(g_min,g_max,100)
-        plt.hist(self.normal_histo,bins,alpha=0.5,label="Norm")
-        plt.hist(self.anomalous_histo,bins,alpha=0.5,label="Ano")
-        plt.legend(loc='upper right')
-        plt.savefig((str)(self.data_name)+"-Scale_check.png")
-        exit(1)
+        #plt.legend(loc='upper right')
+        #plt.savefig((str)(self.data_name)+"-Scale_check.png")
+        #exit(1)
         return torch.from_numpy(np.asarray(self.bucket.pop())),torch.tensor([self.bucket_labels.pop()])
 
     def __len__(self):
@@ -226,7 +220,7 @@ class PFPSampler(object):
         self.dataset=PFPSampler2(self.args, train)
         
 
-        self.data_loader = torch.utils.data.DataLoader(self.dataset,batch_size=self.args.batch_size, shuffle=False, drop_last=True, num_workers=4)
+        self.data_loader = torch.utils.data.DataLoader(self.dataset,batch_size=self.args.batch_size, shuffle=False, drop_last=True, num_workers=0)
         #self.valid_data_loader=torch.utils.data.DataLoader(dataset2,batch_size=self.args.batch_size, shuffle=False, drop_last=True, num_workers=2)
         #self.valid_iterator = iter(self.valid_data_loader)
 

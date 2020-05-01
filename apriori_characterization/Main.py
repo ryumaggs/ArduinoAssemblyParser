@@ -53,7 +53,7 @@ def main(args):
 
     parser.add_argument('--epochs', metavar='N', type=int, help='number of epochs to run for', default=3000)
 
-    parser.add_argument('--batch_size', metavar='bs', type=int, default=512, help='batch size')
+    parser.add_argument('--batch_size', metavar='bs', type=int, default=128, help='batch size')
     parser.add_argument('--lr', metavar='lr', type=float, help='learning rate', default=1e-3)
     parser.add_argument('--rmsprop', action='store_true', help='use rmsprop optimizer')
     parser.add_argument('--sgd', action='store_true', help='use sgd optimizer')

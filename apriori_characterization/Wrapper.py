@@ -11,7 +11,7 @@ import os
 import csv
 import time
 import gzip
-import scipy.optimize import curve_fit
+from scipy.optimize import curve_fit
 from Logger import SummaryPrint
 from misc import bcolors
 import misc
@@ -306,6 +306,23 @@ class Wrapper(object):
         plt.legend(loc='upper right')
         plt.savefig((str)(self.args.run_name)+"-ANO vs NORM errors.png")
         return rets
+
+    def train(self):
+        if self.args.load_checkpoint or self.args.resume or (self.args.checkpoint is not None):
+            self.load(self.args.resume)
+        data_loader = self.data_loader
+
+        print(bcolors.OKBLUE+'*******TRAINING********'+bcolors.ENDC)
+        self.network.train()
+        while self.epoch < self.args.epochs:
+            _, val_ret = self.run_epoch(data_loader, False)
+            self.epoch += 1
+            if self.epoch % self.args.checkpoint_every == 0:
+                print("Saving...")
+                self.save()
+        self.save()
+
+
 
 def gaussx(x, *p):
     A1, mu1, sigma1= p
