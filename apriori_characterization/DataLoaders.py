@@ -42,7 +42,7 @@ class PFPSampler2(Dataset):
         self.data_dirs.extend(args.data_dirs)
         self.keep_label=[0]
         if self.class_conv == True:
-            self.keep_label = [1,2]
+            self.keep_label = [0,1]
         self.list_of_files = fnmatch.filter(os.listdir(self.data_dirs[0]), "*.meta")
         self.list_of_training_files = []
         self.used_list_of_training_files = []
@@ -99,14 +99,14 @@ class PFPSampler2(Dataset):
         if len(self.bucket)<=0:
             self._fill_bucket()
         #checking for data scale via histogram
-        g_min = min(min(self.anomalous_histo),min(self.normal_histo))
-        g_max = max(max(self.anomalous_histo),max(self.normal_histo))
-        bins = np.linspace(g_min,g_max,100)
-        plt.hist(self.normal_histo,bins,alpha=0.5,label="Norm")
-        plt.hist(self.anomalous_histo,bins,alpha=0.5,label="Ano")
-        plt.legend(loc='upper right')
-        plt.savefig((str)(self.data_name)+"-Scale_check.png")
-        exit(1)
+        #g_min = min(min(self.anomalous_histo),min(self.normal_histo))
+        #g_max = max(max(self.anomalous_histo),max(self.normal_histo))
+        #bins = np.linspace(g_min,g_max,100)
+        #plt.hist(self.normal_histo,bins,alpha=0.5,label="Norm")
+        #plt.hist(self.anomalous_histo,bins,alpha=0.5,label="Ano")
+        #plt.legend(loc='upper right')
+        #plt.savefig((str)(self.data_name)+"-Scale_check.png")
+        #exit(1)
         return torch.from_numpy(np.asarray(self.bucket.pop())),torch.tensor([self.bucket_labels.pop()])
 
     def __len__(self):
