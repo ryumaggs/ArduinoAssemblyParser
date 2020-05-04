@@ -122,13 +122,6 @@ class Wrapper(object):
         x, y = x.to(self.device), y.to(self.device)
         y_bar = self.network(x)
         loss_l = self.network.loss(x,y,y_bar)
-	if backwards == False:
-		batch = 0
-		while(batch < 512):
-			truth = y[batch].cpu().numpy()
-			guess = y_bar[batch, 0].detach().cpu().numpy()
-			print("truth: ", truth, " || guess: ", guess)
-			batch += 1
         if backwards == False and self.args.ryu_testing == True:
             batch = 0
             batch_test = []
@@ -139,12 +132,12 @@ class Wrapper(object):
                     return [l.data.item() for l in loss_l]
                 if label == 1 and self.num_ana > self.ana_limit:
                     return [l.data.item() for l in loss_l]
-                truth = y[batch,:,:].cpu().numpy()
+                truth = x[batch,:,:].cpu().numpy()
                 batch_test.append(truth)
 
                 guess = y_bar[batch,:,:].detach().cpu().numpy()
                 l2 = np.linalg.norm(truth-guess)
-		print("guess: ", guess, " truth ", truth)
+
                 if label == 2:
                     #print('**************', label)
                     #print('**************', l2)
@@ -314,9 +307,26 @@ class Wrapper(object):
         plt.savefig((str)(self.args.run_name)+"-ANO vs NORM errors.png")
         return rets
 
-    def gaussx(x, *p):
-        A1, mu1, sigma1= p
-        return A1*np.exp(-(x-mu1)**2/(2.*sigma1**2))
+    def train(self):
+        if self.args.load_checkpoint or self.args.resume or (self.args.checkpoint is not None):
+            self.load(self.args.resume)
+        data_loader = self.data_loader
+
+        print(bcolors.OKBLUE+'*******TRAINING********'+bcolors.ENDC)
+        self.network.train()
+        while self.epoch < self.args.epochs:
+            _, val_ret = self.run_epoch(data_loader, False)
+            self.epoch += 1
+            if self.epoch % self.args.checkpoint_every == 0:
+                print("Saving...")
+                self.save()
+        self.save()
+
+
+
+def gaussx(x, *p):
+    A1, mu1, sigma1= p
+    return A1*np.exp(-(x-mu1)**2/(2.*sigma1**2))
 
     def train(self):
         if self.args.load_checkpoint or self.args.resume or (self.args.checkpoint is not None):
