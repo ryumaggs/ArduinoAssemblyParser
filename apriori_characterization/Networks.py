@@ -9,7 +9,7 @@ class AutoConvNetwork(nn.Module):
     @staticmethod
     def add_args(parser):
 
-        parser.add_argument('--enc_channels', metavar='N', type=int, nargs='+', default=[2,3,4,6,9,12,16,20])
+        parser.add_argument('--enc_channels', metavar='N', type=int, nargs='+', default=[16,16,32,32])
         parser.add_argument('--hidden_size', metavar='N', type=int, nargs='+',default=[140,90,60,90,140])
         parser.add_argument('--dec_channels', metavar='N', type=int, nargs='+', default=[20,16,12,9,6,4,3,1])
         parser.add_argument('--stride', metavar='N', type=int, default=2)
@@ -314,9 +314,9 @@ class LatentAutoConvNetwork(nn.Module):
 class ClassConvNetwork(nn.Module):
     @staticmethod
     def add_args(parser):
-        parser.add_argument('--conv_layers', metavar='N', type=int, nargs='+', default=[2,3,4,6,9,12,16,20])
-        parser.add_argument('--fc_layers', metavar='N', type=int, default=[48,16,2])
-        parser.add_argument('--stride', metavar='N', type=int, default=2)
+        parser.add_argument('--conv_layers', metavar='N', type=int, nargs='+', default=[8,8,16,16,32,32])
+        parser.add_argument('--fc_layers', metavar='N', type=int, default=[256,64,2])
+        parser.add_argument('--stride', metavar='N', type=int, default=3)
         parser.add_argument('--filter_size', metavar='N', type=int, default=4)
         parser.add_argument('--dec_reg',type=str,default="None",help="None,L1,L2...")
         parser.add_argument('--mid_dropout',type=float,default=0,help="middle layer dropout value from 0 to 1")
