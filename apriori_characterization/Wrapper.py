@@ -27,7 +27,7 @@ class Wrapper(object):
         super(Wrapper, self).__init__()
         self.args = args
         self.device = device
-        self.window_size = args.window_size
+        self.window_size = args.window_sizeroc
         self.ctr = 0
         self.nfp = 0
         self.epoch = 0
@@ -223,7 +223,8 @@ class Wrapper(object):
         data_loader.switch_train(False)
 
         r = []
-        for i, data in enumerate(data_loader, 0):
+        enum_data = enumerate(data_loader, 0)
+        for i, data in enum_data:
             print(i)
             # get the inputs; data is a list of [inputs, labels]
             input, label = data
@@ -324,14 +325,14 @@ class Wrapper(object):
         print('beginning..')
         r = []
         labels = []
+
+        print(type(data_loader))
+
         enum = enumerate(data_loader, 0)
-        enum2 = enum
 
         for i, data in enum:
-            # if i == 4:
-            #     break
-            # else:
-            # get the inputs; data is a list of [inputs, labels]
+            print("i: ", i)
+            print("data: ", data)
             input, label = data
             labels.append(label)
             # load these tensors into gpu memory
@@ -389,7 +390,9 @@ class Wrapper(object):
         r = []
         labels = []
 
-        for i, data in enumerate(data_loader, 0):
+        enum_data = enumerate(data_loader, 0)
+
+        for i, data in enum_data:
             input, label = data
             labels.append(label)
             # load these tensors into gpu memory
@@ -423,7 +426,7 @@ class Wrapper(object):
         print("rets", rets)
         return rets
 
-def roc(labels, r_error):
+def roc(labels, r_labels):
     print(len(labels))
     print(len(r_error))
     fpr = dict()
