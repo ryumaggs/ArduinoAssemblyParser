@@ -341,7 +341,7 @@ class Wrapper(object):
             r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
             # inputs.append(input)
             r_item = r_error.item()
-            print(r_item)
+            # print(r_item)
 
             r.append(r_item)
 
@@ -393,8 +393,7 @@ class Wrapper(object):
 
         for i, data in enumerate(data_loader_test, 0):
             input, label = data
-            print("label test: ", label)
-            labels = label
+            labels.append(label)
             # load these tensors into gpu memory
             input = input.cuda()
             # check if the inputs are cpu or gpu tensor
@@ -405,6 +404,7 @@ class Wrapper(object):
 
             r.append(r_item)
 
+        print("length of test labels: ", len(labels))
         # Implement multiple methods of statistical anomalous detection
 
         # STD*3 DID NOT WORK - everything was "normal"
@@ -439,6 +439,8 @@ class Wrapper(object):
         outliers = [err for err in advance if err < lower and err > upper]
         stage_2_behind = [err for err in advance if err > lower and err < upper]
 
+        print("OUTLIERS")
+        print(outliers)
         # data = {
         #     's1': stage_1_behind,
         #     's2': stage_2_behind,
@@ -463,11 +465,19 @@ class Wrapper(object):
 
         plt.axis([0, 100, 0, 100])
         plt.plot(outliers, 'ro')
-        plt.plot(stage_2_behind, 'bo')
-        plt.plot(stage_1_behind, 'go')
+        plt.ylabel("Recon error")
         plt.show()
         plt.savefig(currentDirectory + '/outliers.png')
         plt.close()
+
+
+        plt.axis([0, 100, 0, 100])
+        plt.plot(r, 'ro')
+        plt.ylabel("Recon error")
+        plt.show()
+        plt.savefig(currentDirectory + '/allrecon.png')
+        plt.close()
+
 
 
 
