@@ -459,7 +459,7 @@ class Wrapper(object):
         plt.close()
 
 
-        plt.axis([0, 20, 0, 50])
+        plt.axis([0, 100, 0, 100])
         plt.plot(outliers, 'ro')
         plt.plot(stage_2_behind, 'bo')
         plt.plot(stage_1_behind, 'go')
