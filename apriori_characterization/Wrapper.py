@@ -389,7 +389,7 @@ class Wrapper(object):
         for i, data in enumerate(data_loader_test, 0):
             input, label = data
 
-            labels = label.item()
+            labels = label
             # load these tensors into gpu memory
             input = input.cuda()
             # check if the inputs are cpu or gpu tensor
