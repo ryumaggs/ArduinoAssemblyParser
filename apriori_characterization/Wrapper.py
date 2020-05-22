@@ -305,8 +305,8 @@ class Wrapper(object):
     def test(self, load=True):
         #testing
         print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
-        data_loader = PFPSampler(self.args, train=False)
-
+        data_loader = PFPSampler(self.args, train=True)
+        data_loader_test = PFPSampler(self.args, train=False)
 
         #load checkpoint
         if load:
@@ -319,8 +319,6 @@ class Wrapper(object):
 
         # r = gather_recon()
         print('getting data loader')
-        data_loader=self.data_loader
-        data_loader.switch_train(False)
 
         print('beginning..')
         r = []
@@ -328,9 +326,7 @@ class Wrapper(object):
 
         print(type(data_loader))
 
-        enum = enumerate(data_loader, 0)
-
-        for i, data in enum:
+        for i, data in enumerate(data_loader, 0):
             print("i: ", i)
             print("data: ", data)
             input, label = data
@@ -390,9 +386,7 @@ class Wrapper(object):
         r = []
         labels = []
 
-        enum_data = enumerate(data_loader, 0)
-        print(enum_data)
-        for i, data in enum_data:
+        for i, data in enumerate(data_loader_test, 0):
             input, label = data
             labels.append(label)
             # load these tensors into gpu memory
