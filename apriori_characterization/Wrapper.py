@@ -333,8 +333,7 @@ class Wrapper(object):
 
         for i, data in enumerate(data_loader, 0):
             input, label = data
-            print("label train: ", label)
-            labels = label
+            labels.append(label)
             # load these tensors into gpu memory
             input = input.cuda()
             # check if the inputs are cpu or gpu tensor
@@ -345,6 +344,9 @@ class Wrapper(object):
             print(r_item)
 
             r.append(r_item)
+
+
+        print("elements in training labels: ", len(labels))
 
         r_len = len(r)
         # anom = fit_recon(r)
