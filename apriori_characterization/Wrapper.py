@@ -332,7 +332,7 @@ class Wrapper(object):
         print(type(data_loader))
 
 
-        # Gather recon errors
+        # Gather recon errors on training data
 
         for i, data in enumerate(data_loader, 0):
             input, label = data
@@ -392,7 +392,7 @@ class Wrapper(object):
         # Gather testing recon errors
 
         r = []
-        labels = []
+        testing_labels = []
 
 
         print("Training T / F: ", data_loader.dataset.train)
@@ -400,7 +400,7 @@ class Wrapper(object):
 
         for i, data in enumerate(data_loader_test, 0):
             input, label = data
-            labels.append(label)
+            testing_labels.append(label)
             # load these tensors into gpu memory
             input = input.cuda()
             # check if the inputs are cpu or gpu tensor
@@ -411,11 +411,12 @@ class Wrapper(object):
 
             r.append(r_item)
 
-        print("length of test labels: ", len(labels))
-        # Implement multiple methods of statistical anomalous detection
+        print("length of test labels: ", len(testing_labels))
+        # Implement multiple methods of statistical outlier detection
 
         # STD*3
-
+        mean = np.mean(r)
+        std = np.std(r)
 
         cut_off = std * 3
         lower, upper = mean - cut_off, mean + cut_off
