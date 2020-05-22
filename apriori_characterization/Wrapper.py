@@ -422,7 +422,7 @@ class Wrapper(object):
         roc(pred_labels, r)
 
 
-        rets, _ = self.run_epoch(data_loader, True, labels, r)
+        rets, _ = self.run_epoch(data_loader, True)
         rets = [self.args.run_name] + rets #run name
         print("----------------")
         print("rets", rets)
