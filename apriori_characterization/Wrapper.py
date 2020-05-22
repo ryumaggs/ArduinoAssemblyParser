@@ -395,8 +395,8 @@ class Wrapper(object):
         labels = []
 
 
+        print("Training T / F: ", data_loader.dataset.train)
         print("Training T / F: ", data_loader_test.dataset.train)
-
 
         for i, data in enumerate(data_loader_test, 0):
             input, label = data
