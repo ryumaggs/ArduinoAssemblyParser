@@ -248,8 +248,6 @@ class Wrapper(object):
             else:
                 anom.append(False)
 
-        print(r)
-        print(anom)
         return anom
 
     def run_epoch(self, data_loader, test=False, ryu_test=False):
@@ -347,9 +345,7 @@ class Wrapper(object):
 
         r_len = len(r)
         # anom = fit_recon(r)
-        print(type(r))
         np_r = np.array(r)
-        print(type(np_r))
         # mu, std = norm.stats(np_r)
 
 
@@ -377,6 +373,7 @@ class Wrapper(object):
         currentDirectory = os.getcwd()
         print(currentDirectory)
         plt.savefig(currentDirectory + '/fit.png')
+        plt.close()
 
         print("SAVED FIGURE")
         print(range)
@@ -391,7 +388,9 @@ class Wrapper(object):
 
         for i, data in enumerate(data_loader_test, 0):
             input, label = data
-            labels.append(label)
+            print("label: ", label)
+            print("type: ", type(label))
+            labels.append(label.item())
             # load these tensors into gpu memory
             input = input.cuda()
             # check if the inputs are cpu or gpu tensor
@@ -399,17 +398,74 @@ class Wrapper(object):
             r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
             # inputs.append(input)
             r_item = r_error.item()
-            print(r_item)
 
             r.append(r_item)
 
         # Implement multiple methods of statistical anomalous detection
 
-        # STD*3
+        # STD*3 DID NOT WORK - everything was "normal"
 
-        cut_off = std * 3
-        lower, upper = mean - cut_off, mean + cut_off
-        outliers = [err for err in r if err < lower or err > upper]
+
+        # cut_off = std * 3
+        # lower, upper = mean - cut_off, mean + cut_off
+        # advance = [err for err in r if err < lower or err > upper]
+
+        # Chevyshev http://kyrcha.info/2019/11/26/data-outlier-detection-using-the-chebyshev-theorem-paper-review-and-online-adaptation
+
+        # Stage 1
+
+        p1 = 0.1 # probability of expected outlier
+        k = 4.472 # 1 / sqrt(p1)
+        lower = mean - (k * std)
+        upper = mean + (k * std)
+
+        # Data that are more extreme than the ODVs of stage-1 are removed from the data for the second phase of the algorithm.
+        advance = [err for err in r if err > lower and err < upper]
+        stage_1_behind = [err for err in r if err < lower or err > upper]
+
+        # Stage 2
+        p2 = 0.01
+        k2 = 10
+        mean_trunc= np.mean(advance)
+        std_trunc = np.std(advance)
+
+        lower = mean_trunc - (k * std)
+        upper = mean_trunc + (k * std)
+
+        outliers = [err for err in advance if err < lower and err > upper]
+        stage_2_behind = [err for err in advance if err > lower and err < upper]
+
+        # data = {
+        #     's1': stage_1_behind,
+        #     's2': stage_2_behind,
+        #     'outlier': np.random.randn(50)
+        # }
+        #
+        # data['b'] = data['a'] + 10 * np.random.randn(50)
+        # data['d'] = np.abs(data['d']) * 100
+        #
+        # plt.plot('a', 'b', c='c', s='d', data=data)
+        # plt.xlabel('entry a')
+        # plt.ylabel('entry b')
+        # plt.show()
+
+        fig, axs = plt.subplots(2, 3)
+        axs[0, 0].boxplot(r)
+        axs[0, 0].set_title('basic plot')
+        plt.show()
+        plt.savefig(currentDirectory + '/box.png')
+        plt.close()
+
+
+        plt.axis([0, 6, 0, 20])
+        plt.plot(outliers, 'ro')
+        plt.plot(stage_2_behind, 'bo')
+        plt.plot(stage_1_behind, 'go')
+        plt.show()
+        plt.savefig(currentDirectory + '/outliers.png')
+        plt.close()
+
+
 
         pred_labels = []
         for err in r:
@@ -418,8 +474,10 @@ class Wrapper(object):
             else:
                 pred_labels.append(False)
 
-        print("Labels: ", labels[0])
-        roc(pred_labels, r)
+        # print("Labels: ", labels[0])
+        # roc(pred_labels, r)
+
+
 
 
         rets, _ = self.run_epoch(data_loader, True)
