@@ -418,7 +418,7 @@ class Wrapper(object):
             else:
                 pred_labels.append(False)
 
-        print("Labels: ", labels)
+        print("Labels: ", labels[0])
         roc(pred_labels, r)
 
 
@@ -429,17 +429,13 @@ class Wrapper(object):
         return rets
 
 def roc(labels, r_error):
-    print(len(labels))
-    print(len(r_error))
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
 
     fpr, tpr, _ = metrics.roc_curve(labels, r_error, pos_label=1)
-    print(fpr)
-    print(tpr)
     print("threshold: ", _)
-    roc_auc = auc(fpr, tpr)
+    roc_auc = metrics.auc(fpr, tpr)
 
     plt.figure()
     lw = 2
