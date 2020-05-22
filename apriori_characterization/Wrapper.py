@@ -310,6 +310,9 @@ class Wrapper(object):
         data_loader = PFPSampler(self.args, train=True)
         data_loader_test = PFPSampler(self.args, train=False)
 
+
+
+
         #load checkpoint
         if load:
             self.load()
@@ -386,13 +389,16 @@ class Wrapper(object):
         print("SAVED FIGURE")
         print(range)
 
-        data_loader=self.data_loader
-
-
         # Gather testing recon errors
 
         r = []
         labels = []
+
+
+        print("Number testing files: ", len(data_loader.list_of_testing_files))
+        print("Number of training files: ", len(data_loader.list_of_training_files))
+        print("Number in data loader test: ", len(data_loader_test.num_files))
+
 
         for i, data in enumerate(data_loader_test, 0):
             input, label = data
@@ -410,12 +416,15 @@ class Wrapper(object):
         print("length of test labels: ", len(labels))
         # Implement multiple methods of statistical anomalous detection
 
-        # STD*3 DID NOT WORK - everything was "normal"
+        # STD*3
 
 
-        # cut_off = std * 3
-        # lower, upper = mean - cut_off, mean + cut_off
-        # advance = [err for err in r if err < lower or err > upper]
+        cut_off = std * 3
+        lower, upper = mean - cut_off, mean + cut_off
+        outliers_std3 = [err for err in r if err < lower or err > upper]
+        print("STD3 outliers: ")
+        print(outliers_std3)
+
         print("chevyshev")
         # Chevyshev http://kyrcha.info/2019/11/26/data-outlier-detection-using-the-chebyshev-theorem-paper-review-and-online-adaptation
 
@@ -470,7 +479,7 @@ class Wrapper(object):
         plt.savefig(currentDirectory + '/box.png')
         plt.close()
 
-
+        # want to make a scatter plot but what would be the other axis
         plt.axis([0, 100, 0, 100])
         plt.plot(outliers, 'ro')
         plt.ylabel("Recon error")
