@@ -332,7 +332,6 @@ class Wrapper(object):
 
         for i, data in enumerate(data_loader, 0):
             print("i: ", i)
-            print("data: ", data)
             input, label = data
             labels.append(label)
             # load these tensors into gpu memory
@@ -360,16 +359,12 @@ class Wrapper(object):
 
         range = [mean + std, mean - std]
         anom = []
-        print("mu type: ", type(mean), mean)
-        print("std type: ", type(std), std)
+
         # Plot the histogram.
         plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
 
         mu, std_norm = norm.fit(r)
-        print("MU: ", mu)
-        print("MEAN: ", mean)
-        print("STD_NORM: ", std_norm)
-        print("STD: ", std)
+
         # Plot the PDF.
         xmin, xmax = plt.xlim()
         x =  np.sort(r)#np.linspace(xmin, xmax, r_len)
@@ -423,7 +418,8 @@ class Wrapper(object):
             else:
                 pred_labels.append(False)
 
-        roc(labels, r)
+        print("Labels: ", labels)
+        roc(pred_labels, r)
 
 
         rets, _ = self.run_epoch(data_loader, True, labels, r)
