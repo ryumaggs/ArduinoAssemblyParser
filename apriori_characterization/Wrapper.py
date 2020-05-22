@@ -441,8 +441,11 @@ class Wrapper(object):
         lower = mean_trunc - (k2 * std_trunc)
         upper = mean_trunc + (k2 * std_trunc)
 
+        print("LOWER: ", lower)
+        print("UPPER: ", upper)
+        print("R: ", r)
         outliers = [err for err in r if err < lower or err > upper]
-        stage_2_behind = [err for err in advance if err > lower or err < upper]
+        stage_2_behind = [err for err in r if err > lower or err < upper]
 
         print("OUTLIERS")
         print(outliers)
