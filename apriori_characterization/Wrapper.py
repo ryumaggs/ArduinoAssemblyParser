@@ -412,6 +412,11 @@ class Wrapper(object):
             r.append(r_item)
 
         print("length of test labels: ", len(testing_labels))
+        testing_labels = torch.cat(testing_labels, dim=0)
+        testing_labels = torch.flatten(testing_labels)
+        torch.set_printoptions(threshold=10000)
+        print("testing labels")
+        print(testing_labels)
         # Implement multiple methods of statistical outlier detection
 
         # STD*3
