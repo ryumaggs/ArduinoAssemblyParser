@@ -438,8 +438,8 @@ class Wrapper(object):
         mean_trunc= np.mean(advance)
         std_trunc = np.std(advance)
 
-        lower = mean_trunc - (k * std_trunc)
-        upper = mean_trunc + (k * std_trunc)
+        lower = mean_trunc - (k2 * std_trunc)
+        upper = mean_trunc + (k2 * std_trunc)
 
         outliers = [err for err in advance if err < lower or err > upper]
         stage_2_behind = [err for err in advance if err > lower or err < upper]
