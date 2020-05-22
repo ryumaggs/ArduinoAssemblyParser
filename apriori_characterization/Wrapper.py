@@ -348,6 +348,7 @@ class Wrapper(object):
 
         print("elements in training labels: ", len(labels))
         training_labels = torch.cat(labels, dim=0)
+        training_labels = tf.reshape(training_labels, [-1])
         print("training labels: ", training_labels)
 
         r_len = len(r)
