@@ -332,8 +332,8 @@ class Wrapper(object):
         # Gather recon errors
 
         for i, data in enumerate(data_loader, 0):
-            print("i: ", i)
             input, label = data
+            print("label train: ", label)
             labels = label
             # load these tensors into gpu memory
             input = input.cuda()
@@ -391,7 +391,7 @@ class Wrapper(object):
 
         for i, data in enumerate(data_loader_test, 0):
             input, label = data
-
+            print("label test: ", label)
             labels = label
             # load these tensors into gpu memory
             input = input.cuda()
