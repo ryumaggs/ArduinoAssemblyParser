@@ -27,7 +27,7 @@ class Wrapper(object):
         super(Wrapper, self).__init__()
         self.args = args
         self.device = device
-        self.window_size = args.window_sizeroc
+        self.window_size = args.window_size
         self.ctr = 0
         self.nfp = 0
         self.epoch = 0
@@ -391,7 +391,7 @@ class Wrapper(object):
         labels = []
 
         enum_data = enumerate(data_loader, 0)
-
+        print(enum_data)
         for i, data in enum_data:
             input, label = data
             labels.append(label)
