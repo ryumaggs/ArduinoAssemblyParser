@@ -411,7 +411,7 @@ class Wrapper(object):
         # cut_off = std * 3
         # lower, upper = mean - cut_off, mean + cut_off
         # advance = [err for err in r if err < lower or err > upper]
-
+        print("chevyshev")
         # Chevyshev http://kyrcha.info/2019/11/26/data-outlier-detection-using-the-chebyshev-theorem-paper-review-and-online-adaptation
 
         # Stage 1
