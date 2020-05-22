@@ -395,9 +395,7 @@ class Wrapper(object):
         labels = []
 
 
-        print("Number testing files: ", len(data_loader.dataset.list_of_testing_files))
-        print("Number of training files: ", len(data_loader.dataset.list_of_training_files))
-        print("Number in data loader test: ", len(data_loader_test.num_files))
+        print("Training T / F: ", data_loader_test.dataset.train))
 
 
         for i, data in enumerate(data_loader_test, 0):
