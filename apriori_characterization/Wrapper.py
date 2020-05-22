@@ -347,6 +347,8 @@ class Wrapper(object):
 
 
         print("elements in training labels: ", len(labels))
+        training_labels = torch.cat(labels, dim=0)
+        print("training labels: ", training_labels)
 
         r_len = len(r)
         # anom = fit_recon(r)
@@ -471,7 +473,7 @@ class Wrapper(object):
         plt.close()
 
 
-        plt.axis([0, 100, 0, 100])
+        plt.axis([0, 5, 0, 5])
         plt.plot(r, 'ro')
         plt.ylabel("Recon error")
         plt.show()
