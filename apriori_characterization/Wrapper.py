@@ -305,6 +305,7 @@ class Wrapper(object):
     def test(self, load=True):
         #testing
         print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
+
         data_loader = PFPSampler(self.args, train=True)
         data_loader_test = PFPSampler(self.args, train=False)
 
@@ -325,6 +326,9 @@ class Wrapper(object):
         labels = []
 
         print(type(data_loader))
+
+
+        # Gather recon errors
 
         for i, data in enumerate(data_loader, 0):
             print("i: ", i)
@@ -349,6 +353,8 @@ class Wrapper(object):
         print(type(np_r))
         # mu, std = norm.stats(np_r)
 
+
+        # Plot training recon error distribution fit to gaussian
         mean = np.mean(r)
         std = np.std(r)
 
@@ -382,7 +388,9 @@ class Wrapper(object):
 
         data_loader=self.data_loader
 
-        data_loader.switch_train(True)
+
+        # Gather testing recon errors
+
         r = []
         labels = []
 
@@ -400,6 +408,10 @@ class Wrapper(object):
 
             r.append(r_item)
 
+        # Implement multiple methods of statistical anomalous detection
+
+        # STD*3
+
         cut_off = std * 3
         lower, upper = mean - cut_off, mean + cut_off
         outliers = [err for err in r if err < lower or err > upper]
@@ -411,7 +423,7 @@ class Wrapper(object):
             else:
                 pred_labels.append(False)
 
-        roc(labels, pred_labels)
+        roc(labels, r)
 
 
         rets, _ = self.run_epoch(data_loader, True, labels, r)
@@ -420,7 +432,7 @@ class Wrapper(object):
         print("rets", rets)
         return rets
 
-def roc(labels, r_labels):
+def roc(labels, r_error):
     print(len(labels))
     print(len(r_error))
     fpr = dict()
@@ -430,6 +442,7 @@ def roc(labels, r_labels):
     fpr, tpr, _ = metrics.roc_curve(labels, r_error, pos_label=1)
     print(fpr)
     print(tpr)
+    print("threshold: ", _)
     roc_auc = auc(fpr, tpr)
 
     plt.figure()
