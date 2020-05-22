@@ -428,6 +428,8 @@ class Wrapper(object):
 
         # Data that are more extreme than the ODVs of stage-1 are removed from the data for the second phase of the algorithm.
         advance = [err for err in r if err > lower and err < upper]
+        print("advancing")
+        print(advance)
         stage_1_behind = [err for err in r if err < lower or err > upper]
 
         # Stage 2
@@ -436,8 +438,8 @@ class Wrapper(object):
         mean_trunc= np.mean(advance)
         std_trunc = np.std(advance)
 
-        lower = mean_trunc - (k * std)
-        upper = mean_trunc + (k * std)
+        lower = mean_trunc - (k * std_trunc)
+        upper = mean_trunc + (k * std_trunc)
 
         outliers = [err for err in advance if err < lower and err > upper]
         stage_2_behind = [err for err in advance if err > lower and err < upper]
