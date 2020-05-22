@@ -278,6 +278,9 @@ class Wrapper(object):
 
             val_rets = self.validSumPrint.end_epoch()
 
+        else:
+            val_rets = None
+
         return rets, val_rets
 
 
