@@ -505,7 +505,7 @@ class Wrapper(object):
                 pred_labels.append(1)
             else:
                 pred_labels.append(2)
-        precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
+        precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
         self.prc(precision, recall,'C')
 
 
