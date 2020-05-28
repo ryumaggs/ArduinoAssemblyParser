@@ -379,8 +379,8 @@ class Wrapper(object):
         #testing
         print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
 
-        # data_loader = PFPSampler(self.args, train=True)
-        # data_loader_test = PFPSampler(self.args, train=False)
+        data_loader = PFPSampler(self.args, train=True)
+        data_loader_test = PFPSampler(self.args, train=False)
         #load checkpoint
         if load:
             self.load()
@@ -397,7 +397,7 @@ class Wrapper(object):
         #     rets, _ = self.run_epoch(self.data_loader, True)
         #     print(self.num_norm, " || ", self.num_ana)
 
-        r, training_labels = self.recon_errors(self.data_loader)
+        r, training_labels = self.recon_errors(data_loader)
 
         training_labels = torch.cat(labels, dim=0)
         training_labels = torch.flatten(training_labels)
@@ -406,7 +406,7 @@ class Wrapper(object):
 
         # Gather testing recon errors
         self.data_loader.switch_train(False)
-        r_test, testing_labels = self.recon_errors(self.data_loader)
+        r_test, testing_labels = self.recon_errors(data_loader_test)
 
 
         # Visuals
