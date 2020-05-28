@@ -433,7 +433,7 @@ class Wrapper(object):
     def prc(self, precision, recall, type):
         # calculate precision-recall AUC
         auc_ = metrics.auc(recall, precision)
-        plt.plot(lr_recall, lr_precision, marker='.', label='Logistic')
+        plt.plot(recall, precision, marker='.', label='Logistic')
         # axis labels
         plt.xlabel('Recall')
         plt.ylabel('Precision')
