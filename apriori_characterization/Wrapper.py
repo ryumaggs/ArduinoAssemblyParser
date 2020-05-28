@@ -395,7 +395,7 @@ class Wrapper(object):
             rets, _ = self.ryu_testing(False,not self.data_loader.dataset.train)
             print(self.num_norm, " || ", self.num_ana)
 
-
+        self.data_loader.switch_train(True)
         r, training_labels = recon_errors(self.data_loader)
 
         training_labels = torch.cat(labels, dim=0)
@@ -404,17 +404,17 @@ class Wrapper(object):
         mean, std = fit_recon_to_norm(r)
 
         # Gather testing recon errors
-        self.data_loader.switch_train(true)
+        self.data_loader.switch_train(False)
         r_test, testing_labels = recon_errors(self.data_loader)
 
 
         # Visuals
         testing_labels = torch.cat(testing_labels, dim=0)
         testing_labels = torch.flatten(testing_labels)
-        std3(mean, std, r_test, testing_labels)
-        chevy(mean, std, r_test, testing_labels)
-        test_label_list = testing_labels.tolist()
 
+        test_label_list = testing_labels.tolist()
+        std3(mean, std, r_test, test_label_list)
+        chevy(mean, std, r_test, test_label_list)
         rets, _ = self.run_epoch(data_loader, True)
         rets = [self.args.run_name] + rets #run name
         print("----------------")
