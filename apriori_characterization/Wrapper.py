@@ -434,7 +434,7 @@ class Wrapper(object):
         # calculate precision-recall AUC
         print("precision: ", precision)
         print("recall: ", recall)
-        auc_ = metrics.auc(recall, precision)
+        auc_ = metrics.auc(recall, precision, pos_label=1)
         plt.plot(recall, precision, marker='.', label='Logistic')
         # axis labels
         plt.xlabel('Recall')
