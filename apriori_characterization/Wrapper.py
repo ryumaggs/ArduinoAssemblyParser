@@ -401,14 +401,12 @@ class Wrapper(object):
         self.network.eval()
         #run epoch
 
-        # r = gather_recon()
-        while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
-            rets, _ = self.ryu_testing(False, not self.data_loader.dataset.train)
-            # rets, _ = self.run_epoch(self.data_loader, True)
-            print(self.num_norm, " || ", self.num_ana)
+        # while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
+        #     rets, _ = self.ryu_testing(False, not self.data_loader.dataset.train)
+        #     print(self.num_norm, " || ", self.num_ana)
 
-        data_loader = self.data_loader.switch_train(True)
-        data_loader_test = self.data_loader.switch_train(False)
+        # data_loader = self.data_loader.switch_train(True)
+        # data_loader_test = self.data_loader.switch_train(False)
         r, training_labels = self.recon_errors(data_loader)
 
         mean, std = self.fit_recon_to_norm(r)
@@ -423,6 +421,7 @@ class Wrapper(object):
         self.std3(mean, std, r_test, fake_labels)
         self.chevy(mean, std, r_test, fake_labels)
         print("----------------")
+        rets, _ = self.run_epoch(self.data_loader, True)
         rets = [self.args.run_name] + rets #run name
         print("rets", rets)
         return rets
