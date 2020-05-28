@@ -434,7 +434,7 @@ class Wrapper(object):
         # calculate precision-recall AUC
         print("precision: ", precision)
         print("recall: ", recall)
-        auc_ = metrics.auc(recall, precision, pos_label=1)
+        auc_ = metrics.auc(recall, precision)
         plt.plot(recall, precision, marker='.', label='Logistic')
         # axis labels
         plt.xlabel('Recall')
@@ -464,7 +464,7 @@ class Wrapper(object):
                 pred_labels.append(False) #normal
 
         # precision, recall = metrics(r_test, pred_r)
-        precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
+        precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
         self.prc(precision, recall,'S')
 
     def chevy(self, mean, std, r, labels):
