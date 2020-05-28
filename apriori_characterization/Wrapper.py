@@ -413,8 +413,8 @@ class Wrapper(object):
         testing_labels = torch.flatten(testing_labels)
 
         test_label_list = testing_labels.tolist()
-        std3(mean, std, r_test, test_label_list)
-        chevy(mean, std, r_test, test_label_list)
+        self.std3(mean, std, r_test, test_label_list)
+        self.chevy(mean, std, r_test, test_label_list)
         print("----------------")
         rets, _ = self.run_epoch(self.data_loader, True)
         rets = [self.args.run_name] + rets #run name
