@@ -326,7 +326,7 @@ class Wrapper(object):
         return precision, recall
 
     # def prc(precision, recall)
-    def recon_errors(self, r, data_loader):
+    def recon_errors(self, data_loader):
         # Gather recon errors on data
         r = []
         labels = []
@@ -398,7 +398,6 @@ class Wrapper(object):
         #     print(self.num_norm, " || ", self.num_ana)
 
         r, training_labels = self.recon_errors(data_loader)
-
         training_labels = torch.cat(labels, dim=0)
         training_labels = torch.flatten(training_labels)
 
