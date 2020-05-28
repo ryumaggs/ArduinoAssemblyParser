@@ -304,225 +304,225 @@ class Wrapper(object):
         val_rets = None
         return rets, val_rets
 
-def metrics(y_actual, y_hat):
+    def metrics(y_actual, y_hat):
 
-    TP = 0
-    FP = 0
-    TN = 0
-    FN = 0
+        TP = 0
+        FP = 0
+        TN = 0
+        FN = 0
 
-    for i in range(len(labels)):
-        if y_actual[i]==y_hat[i]==1:
-           TP += 1
-        if y_hat[i]==1 and y_actual[i]!=y_hat[i]:
-           FP += 1
-        if y_actual[i]==y_hat[i]==0:
-           TN += 1
-        if y_hat[i]==0 and y_actual[i]!=y_hat[i]:
-           FN += 1
+        for i in range(len(labels)):
+            if y_actual[i]==y_hat[i]==1:
+               TP += 1
+            if y_hat[i]==1 and y_actual[i]!=y_hat[i]:
+               FP += 1
+            if y_actual[i]==y_hat[i]==0:
+               TN += 1
+            if y_hat[i]==0 and y_actual[i]!=y_hat[i]:
+               FN += 1
 
-    precision = TP / (TP + FP)
-    recall = TP / (TP + FN)
-    return precision, recall
+        precision = TP / (TP + FP)
+        recall = TP / (TP + FN)
+        return precision, recall
 
-# def prc(precision, recall)
-def recon_errors(r, data_loader):
-    # Gather recon errors on data
-    r = []
-    labels = []
-    for i, data in enumerate(data_loader, 0):
-        input, label = data
-        labels.append(label)
-        # load these tensors into gpu memory
-        input = input.cuda()
-        # check if the inputs are cpu or gpu tensor
-        output = self.network(input)
-        r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
-        # inputs.append(input)
-        r_item = r_error.item()
-        # print(r_item)
+    # def prc(precision, recall)
+    def recon_errors(r, data_loader):
+        # Gather recon errors on data
+        r = []
+        labels = []
+        for i, data in enumerate(data_loader, 0):
+            input, label = data
+            labels.append(label)
+            # load these tensors into gpu memory
+            input = input.cuda()
+            # check if the inputs are cpu or gpu tensor
+            output = self.network(input)
+            r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
+            # inputs.append(input)
+            r_item = r_error.item()
+            # print(r_item)
 
-        r.append(r_item)
+            r.append(r_item)
 
-    return r, labels
+        return r, labels
 
-def fit_recon_to_norm(r):
-    # Plot training recon error distribution fit to gaussian
-    mean = np.mean(r)
-    std = np.std(r)
+    def fit_recon_to_norm(r):
+        # Plot training recon error distribution fit to gaussian
+        mean = np.mean(r)
+        std = np.std(r)
 
-    range = [mean + std, mean - std]
-    anom = []
+        range = [mean + std, mean - std]
+        anom = []
 
-    # Plot the histogram.
-    plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
+        # Plot the histogram.
+        plt.hist(r, bins=25, density=True, alpha=0.6, color='g')
 
-    mu, std_norm = norm.fit(r)
+        mu, std_norm = norm.fit(r)
 
-    # Plot the PDF.
-    xmin, xmax = plt.xlim()
-    x =  np.sort(r)#np.linspace(xmin, xmax, r_len)
-    p = norm.pdf(x, mu, std_norm)
-    plt.plot(x, p, 'k', linewidth=2)
-    title = "Fit results: mu = %.2f,  std = %.2f" % (mean, std)
-    plt.title(title)
+        # Plot the PDF.
+        xmin, xmax = plt.xlim()
+        x =  np.sort(r)#np.linspace(xmin, xmax, r_len)
+        p = norm.pdf(x, mu, std_norm)
+        plt.plot(x, p, 'k', linewidth=2)
+        title = "Fit results: mu = %.2f,  std = %.2f" % (mean, std)
+        plt.title(title)
 
-    plt.show()
-    currentDirectory = os.getcwd()
-    print(currentDirectory)
-    plt.savefig(currentDirectory + '/fit.png')
-    plt.close()
+        plt.show()
+        currentDirectory = os.getcwd()
+        print(currentDirectory)
+        plt.savefig(currentDirectory + '/fit.png')
+        plt.close()
 
-    return mean, std
+        return mean, std
 
-def test(self, load=True):
-    #testing
-    print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
+    def test(self, load=True):
+        #testing
+        print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
 
-    # data_loader = PFPSampler(self.args, train=True)
-    # data_loader_test = PFPSampler(self.args, train=False)
-    #load checkpoint
-    if load:
-        self.load()
-    #set no gradients
-    print('setting no grad')
-    self.network.cuda()
-    self.network.eval()
-    #run epoch
+        # data_loader = PFPSampler(self.args, train=True)
+        # data_loader_test = PFPSampler(self.args, train=False)
+        #load checkpoint
+        if load:
+            self.load()
+        #set no gradients
+        print('setting no grad')
+        self.network.cuda()
+        self.network.eval()
+        #run epoch
 
-    # r = gather_recon()
-    while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
-        rets, _ = self.ryu_testing(False,not self.data_loader.dataset.train)
-        print(self.num_norm, " || ", self.num_ana)
-
-
-    r, training_labels = recon_errors(self.data_loader)
-
-    training_labels = torch.cat(labels, dim=0)
-    training_labels = torch.flatten(training_labels)
-
-    mean, std = fit_recon_to_norm(r)
-
-    # Gather testing recon errors
-    self.data_loader.switch_train(true)
-    r_test, testing_labels = recon_errors(self.data_loader)
+        # r = gather_recon()
+        while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
+            rets, _ = self.ryu_testing(False,not self.data_loader.dataset.train)
+            print(self.num_norm, " || ", self.num_ana)
 
 
-    # Visuals
-    testing_labels = torch.cat(testing_labels, dim=0)
-    testing_labels = torch.flatten(testing_labels)
-    std3(mean, std, r_test, testing_labels)
-    chevy(mean, std, r_test, testing_labels)
-    test_label_list = testing_labels.tolist()
+        r, training_labels = recon_errors(self.data_loader)
 
-    rets, _ = self.run_epoch(data_loader, True)
-    rets = [self.args.run_name] + rets #run name
-    print("----------------")
-    print("rets", rets)
-    return rets
+        training_labels = torch.cat(labels, dim=0)
+        training_labels = torch.flatten(training_labels)
 
-def prc(precision, recall, type):
-    # calculate precision-recall AUC
-    auc = auc(recall, precision)
-    plt.plot(lr_recall, lr_precision, marker='.', label='Logistic')
-    # axis labels
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.plot(label="{}, AUC={:.3f}".format(auc))
-    # show the legend
-    plt.legend()
-    # show the plot
-    currentDirectory = os.getcwd()
+        mean, std = fit_recon_to_norm(r)
 
-    if type == 'C':
-        plt.savefig(currentDirectory + '/Chevy-PRC.png')
-    else:
-        plt.savefig(currentDirectory + '/STD3-PRC.png')
+        # Gather testing recon errors
+        self.data_loader.switch_train(true)
+        r_test, testing_labels = recon_errors(self.data_loader)
 
 
+        # Visuals
+        testing_labels = torch.cat(testing_labels, dim=0)
+        testing_labels = torch.flatten(testing_labels)
+        std3(mean, std, r_test, testing_labels)
+        chevy(mean, std, r_test, testing_labels)
+        test_label_list = testing_labels.tolist()
 
-def std3(mean, std, r, labels):
-    # STD*3
+        rets, _ = self.run_epoch(data_loader, True)
+        rets = [self.args.run_name] + rets #run name
+        print("----------------")
+        print("rets", rets)
+        return rets
 
-    cut_off = std * 3
-    lower, upper = mean - cut_off, mean + cut_off
-    outliers_std3 = [err for err in r if err < lower or err > upper]
-    for err in r:
-        if err in outliers_std3:
-            pred_labels.append(True) # anomaly
+    def prc(precision, recall, type):
+        # calculate precision-recall AUC
+        auc = auc(recall, precision)
+        plt.plot(lr_recall, lr_precision, marker='.', label='Logistic')
+        # axis labels
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        plt.plot(label="{}, AUC={:.3f}".format(auc))
+        # show the legend
+        plt.legend()
+        # show the plot
+        currentDirectory = os.getcwd()
+
+        if type == 'C':
+            plt.savefig(currentDirectory + '/Chevy-PRC.png')
         else:
-            pred_labels.append(False) #normal
-
-    # precision, recall = metrics(r_test, pred_r)
-    precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
-    prc(precision, recall,'S')
-
-def chevy(mean, std, r, labels):
-    # Chevyshev http://kyrcha.info/2019/11/26/data-outlier-detection-using-the-chebyshev-theorem-paper-review-and-online-adaptation
-
-    # Stage 1
-
-    p1 = 0.1 # probability of expected outlier
-    k = 4.472 # 1 / sqrt(p1)
-    lower = mean - (k * std)
-    upper = mean + (k * std)
-
-    # Data that are more extreme than the ODVs of stage-1 are removed from the data for the second phase of the algorithm.
-    advance = [err for err in r if err > lower and err < upper]
-    print("advancing")
-    print(advance)
-    stage_1_behind = [err for err in r if err < lower or err > upper]
-
-    # Stage 2
-    p2 = 0.01
-    k2 = 10
-    mean_trunc= np.mean(advance)
-    std_trunc = np.std(advance)
-
-    lower = mean_trunc - (k2 * std_trunc)
-    upper = mean_trunc + (k2 * std_trunc)
-
-    print("LOWER: ", lower)
-    print("UPPER: ", upper)
-    print("R: ", r)
-    outliers = [err for err in r if err < lower or err > upper]
-    stage_2_behind = [err for err in r if err > lower or err < upper]
-
-    pred_labels = []
-
-    for err in r:
-        if err in outliers:
-            pred_labels.append(1)
-        else:
-            pred_labels.append(0)
-    precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
-    prc(precision, recall,'C')
+            plt.savefig(currentDirectory + '/STD3-PRC.png')
 
 
-    # return outliers
 
-def roc(labels, r_error):
-    fpr = dict()
-    tpr = dict()
-    roc_auc = dict()
+    def std3(mean, std, r, labels):
+        # STD*3
 
-    fpr, tpr, _ = metrics.roc_curve(labels, r_error, pos_label=1)
-    print("threshold: ", _)
-    roc_auc = metrics.auc(fpr, tpr)
+        cut_off = std * 3
+        lower, upper = mean - cut_off, mean + cut_off
+        outliers_std3 = [err for err in r if err < lower or err > upper]
+        for err in r:
+            if err in outliers_std3:
+                pred_labels.append(True) # anomaly
+            else:
+                pred_labels.append(False) #normal
 
-    plt.figure()
-    lw = 2
-    plt.plot(fpr, tpr, color='darkorange',
-             lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
-    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Reconstruction Error ROC')
-    plt.legend(loc="lower right")
-    currentDirectory = os.getcwd()
-    plt.savefig(currentDirectory + '/ROC.png')
+        # precision, recall = metrics(r_test, pred_r)
+        precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
+        prc(precision, recall,'S')
+
+    def chevy(mean, std, r, labels):
+        # Chevyshev http://kyrcha.info/2019/11/26/data-outlier-detection-using-the-chebyshev-theorem-paper-review-and-online-adaptation
+
+        # Stage 1
+
+        p1 = 0.1 # probability of expected outlier
+        k = 4.472 # 1 / sqrt(p1)
+        lower = mean - (k * std)
+        upper = mean + (k * std)
+
+        # Data that are more extreme than the ODVs of stage-1 are removed from the data for the second phase of the algorithm.
+        advance = [err for err in r if err > lower and err < upper]
+        print("advancing")
+        print(advance)
+        stage_1_behind = [err for err in r if err < lower or err > upper]
+
+        # Stage 2
+        p2 = 0.01
+        k2 = 10
+        mean_trunc= np.mean(advance)
+        std_trunc = np.std(advance)
+
+        lower = mean_trunc - (k2 * std_trunc)
+        upper = mean_trunc + (k2 * std_trunc)
+
+        print("LOWER: ", lower)
+        print("UPPER: ", upper)
+        print("R: ", r)
+        outliers = [err for err in r if err < lower or err > upper]
+        stage_2_behind = [err for err in r if err > lower or err < upper]
+
+        pred_labels = []
+
+        for err in r:
+            if err in outliers:
+                pred_labels.append(1)
+            else:
+                pred_labels.append(0)
+        precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
+        prc(precision, recall,'C')
+
+
+        # return outliers
+
+    def roc(labels, r_error):
+        fpr = dict()
+        tpr = dict()
+        roc_auc = dict()
+
+        fpr, tpr, _ = metrics.roc_curve(labels, r_error, pos_label=1)
+        print("threshold: ", _)
+        roc_auc = metrics.auc(fpr, tpr)
+
+        plt.figure()
+        lw = 2
+        plt.plot(fpr, tpr, color='darkorange',
+                 lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+        plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Reconstruction Error ROC')
+        plt.legend(loc="lower right")
+        currentDirectory = os.getcwd()
+        plt.savefig(currentDirectory + '/ROC.png')
 
 def ryu_test_procedure(self, load = True):
     print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
