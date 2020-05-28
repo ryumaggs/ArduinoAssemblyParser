@@ -128,7 +128,7 @@ class Wrapper(object):
         x, y = x.to(self.device), y.to(self.device)
         y_bar = self.network(x)
         loss_l = self.network.loss(x,y,y_bar)
-        if backwards == False #and self.args.ryu_testing == True:
+        if backwards == False: #and self.args.ryu_testing == True:
             batch = 0
             batch_test = []
             while batch < 512:
