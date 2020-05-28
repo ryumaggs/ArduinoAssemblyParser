@@ -437,7 +437,7 @@ class Wrapper(object):
         # axis labels
         plt.xlabel('Recall')
         plt.ylabel('Precision')
-        plt.plot(label="{}, AUC={:.3f}".format(auc_))
+        plt.title('AUC: '+ str(auc_) , loc='left')
         # show the legend
         plt.legend()
         # show the plot
