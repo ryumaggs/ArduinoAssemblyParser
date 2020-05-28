@@ -337,13 +337,13 @@ class Wrapper(object):
 
 
             # label = torch.cat(label, dim=0)
-            label = torch.flatten(label)
-            label = label[0].item()
+            flat_label = torch.flatten(label)
+            flat_label = flat_label[0].item()
 
             if i == 0:
-                print("label: ", label)
+                print("label: ", flat_label)
 
-            labels.append(label)
+            labels.append(flat_label)
             # load these tensors into gpu memory
             input = input.cuda()
             # check if the inputs are cpu or gpu tensor
