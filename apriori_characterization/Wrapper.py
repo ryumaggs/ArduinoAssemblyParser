@@ -343,7 +343,7 @@ class Wrapper(object):
             if i == 0:
                 print("label: ", flat_label)
 
-            labels.append(label)
+            labels.append(flat_label)
             # load these tensors into gpu memory
             input = input.cuda()
             # check if the inputs are cpu or gpu tensor
@@ -422,8 +422,8 @@ class Wrapper(object):
 
         # Visuals
         fake_labels = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2]
-        self.std3(mean, std, r_test, fake_labels)
-        self.chevy(mean, std, r_test, fake_labels)
+        self.std3(mean, std, r_test, testing_labels)
+        self.chevy(mean, std, r_test, testing_labels)
         print("----------------")
         rets, _ = self.run_epoch(self.data_loader, True)
         rets = [self.args.run_name] + rets #run name
@@ -468,14 +468,14 @@ class Wrapper(object):
             else:
                 pred_labels.append(False) #normal
 
-        # precision, recall = metrics(r_test, pred_r)
-        # precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
-        # self.prc(precision, recall,'S')
-        average_precision = metrics.average_precision_score(labels, pred_labels)
-
-        disp = metrics.plot_precision_recall_curve(self.network, labels, pred_labels)
-        disp.ax_.set_title('2-class Precision-Recall curve: '
-                   'AP={0:0.2f}'.format(average_precision))
+        precision, recall = metrics(r_test, pred_r)
+        precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
+        self.prc(precision, recall,'S')
+        # average_precision = metrics.average_precision_score(labels, pred_labels)
+        #
+        # disp = metrics.plot_precision_recall_curve(self.network, labels, pred_labels)
+        # disp.ax_.set_title('2-class Precision-Recall curve: '
+        #            'AP={0:0.2f}'.format(average_precision))
 
     def chevy(self, mean, std, r, labels):
         # Chevyshev http://kyrcha.info/2019/11/26/data-outlier-detection-using-the-chebyshev-theorem-paper-review-and-online-adaptation
@@ -515,8 +515,8 @@ class Wrapper(object):
                 pred_labels.append(1)
             else:
                 pred_labels.append(2)
-        # precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
-        # self.prc(precision, recall,'C')
+        precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
+        self.prc(precision, recall,'C')
 
 
         # return outliers
