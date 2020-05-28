@@ -330,7 +330,10 @@ class Wrapper(object):
         # Gather recon errors on data
         r = []
         labels = []
+        num = 0
         for i, data in enumerate(data_loader, 0):
+            if i == 0:
+                print("label: ", label)
             input, label = data
             labels.append(label)
             # load these tensors into gpu memory
@@ -343,6 +346,9 @@ class Wrapper(object):
             # print(r_item)
 
             r.append(r_item)
+            num = i
+
+        print("num: ", num)
 
         return r, labels
 
@@ -493,7 +499,7 @@ class Wrapper(object):
             if err in outliers:
                 pred_labels.append(1)
             else:
-                pred_labels.append(0)
+                pred_labels.append(2)
         precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
         self.prc(precision, recall,'C')
 
