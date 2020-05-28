@@ -442,7 +442,7 @@ class Wrapper(object):
 
     def std3(self, mean, std, r, labels):
         # STD*3
-
+        pred_labels = []
         cut_off = std * 3
         lower, upper = mean - cut_off, mean + cut_off
         outliers_std3 = [err for err in r if err < lower or err > upper]
