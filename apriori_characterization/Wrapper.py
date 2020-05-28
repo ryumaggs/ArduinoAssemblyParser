@@ -432,6 +432,8 @@ class Wrapper(object):
 
     def prc(self, precision, recall, type):
         # calculate precision-recall AUC
+        print("precision: ", precision)
+        print("recall: ", recall)
         auc_ = metrics.auc(recall, precision)
         plt.plot(recall, precision, marker='.', label='Logistic')
         # axis labels
@@ -447,7 +449,7 @@ class Wrapper(object):
             plt.savefig(currentDirectory + '/Chevy-PRC.png')
         else:
             plt.savefig(currentDirectory + '/STD3-PRC.png')
-
+        plt.clf()
 
     def std3(self, mean, std, r, labels):
         # STD*3
