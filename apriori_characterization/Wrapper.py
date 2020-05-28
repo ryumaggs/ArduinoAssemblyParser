@@ -397,16 +397,16 @@ class Wrapper(object):
         #     rets, _ = self.run_epoch(self.data_loader, True)
         #     print(self.num_norm, " || ", self.num_ana)
 
-        r, training_labels = recon_errors(self.data_loader)
+        r, training_labels = self.recon_errors(self.data_loader)
 
         training_labels = torch.cat(labels, dim=0)
         training_labels = torch.flatten(training_labels)
 
-        mean, std = fit_recon_to_norm(r)
+        mean, std = self.fit_recon_to_norm(r)
 
         # Gather testing recon errors
         self.data_loader.switch_train(False)
-        r_test, testing_labels = recon_errors(self.data_loader)
+        r_test, testing_labels = self.recon_errors(self.data_loader)
 
 
         # Visuals
@@ -441,7 +441,6 @@ class Wrapper(object):
             plt.savefig(currentDirectory + '/STD3-PRC.png')
 
 
-
     def std3(mean, std, r, labels):
         # STD*3
 
@@ -456,7 +455,7 @@ class Wrapper(object):
 
         # precision, recall = metrics(r_test, pred_r)
         precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
-        prc(precision, recall,'S')
+        self.prc(precision, recall,'S')
 
     def chevy(mean, std, r, labels):
         # Chevyshev http://kyrcha.info/2019/11/26/data-outlier-detection-using-the-chebyshev-theorem-paper-review-and-online-adaptation
@@ -497,7 +496,7 @@ class Wrapper(object):
             else:
                 pred_labels.append(0)
         precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
-        prc(precision, recall,'C')
+        self.prc(precision, recall,'C')
 
 
         # return outliers
