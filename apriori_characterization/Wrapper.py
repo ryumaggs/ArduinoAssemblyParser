@@ -389,11 +389,11 @@ class Wrapper(object):
         self.network.cuda()
         self.network.eval()
         #run epoch
-        self.data_loader.switch_train(True)
+        # self.data_loader.switch_train(True)
 
         # r = gather_recon()
         while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
-            rets, _ = self.ryu_testing(False,not self.data_loader.dataset.train)
+            rets, _ = self.ryu_testing(False, not self.data_loader.dataset.train)
             # rets, _ = self.run_epoch(self.data_loader, True)
             print(self.num_norm, " || ", self.num_ana)
 
