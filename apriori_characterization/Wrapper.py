@@ -421,12 +421,9 @@ class Wrapper(object):
 
 
         # Visuals
-        testing_labels = torch.cat(testing_labels, dim=0)
-        testing_labels = torch.flatten(testing_labels)
 
-        test_label_list = testing_labels.tolist()
-        self.std3(mean, std, r_test, test_label_list)
-        self.chevy(mean, std, r_test, test_label_list)
+        self.std3(mean, std, r_test, testing_labels)
+        self.chevy(mean, std, r_test, testing_labels)
         print("----------------")
         rets, _ = self.run_epoch(self.data_loader, True)
         rets = [self.args.run_name] + rets #run name
