@@ -432,12 +432,12 @@ class Wrapper(object):
 
     def prc(self, precision, recall, type):
         # calculate precision-recall AUC
-        auc = auc(recall, precision)
+        auc_ = metrics.auc(recall, precision)
         plt.plot(lr_recall, lr_precision, marker='.', label='Logistic')
         # axis labels
         plt.xlabel('Recall')
         plt.ylabel('Precision')
-        plt.plot(label="{}, AUC={:.3f}".format(auc))
+        plt.plot(label="{}, AUC={:.3f}".format(auc_))
         # show the legend
         plt.legend()
         # show the plot
