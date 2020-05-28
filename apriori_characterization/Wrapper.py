@@ -22,6 +22,8 @@ from scipy.stats import shapiro
 from scipy.stats import norm
 from sklearn import metrics
 from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import plot_precision_recall_curve
+from sklearn.metrics import average_precision_score
 
 class Wrapper(object):
     def __init__(self, args, network_class, data_loader, device,auto,num_net = 1):
@@ -62,7 +64,6 @@ class Wrapper(object):
         x,y = next(iter(self.data_loader))
         x_size = x.size()
         if self.num_net > 1: #if parameter is defined, will now generate a list of networks
-
             self.network = network_class(args,x_size)
             self.network_list.append(self.network)
             self.sumPrint = SummaryPrint(args,self.network.loss_names(), self.ckpt_dir, 'train' if not args.test else 'test')
@@ -343,7 +344,7 @@ class Wrapper(object):
             if i == 0:
                 print("label: ", flat_label)
 
-            labels.append(flat_label)
+            labels.append(label)
             # load these tensors into gpu memory
             input = input.cuda()
             # check if the inputs are cpu or gpu tensor
@@ -432,10 +433,15 @@ class Wrapper(object):
 
     def prc(self, precision, recall, type):
         # calculate precision-recall AUC
+
+
+
+
+
         print("precision: ", precision)
         print("recall: ", recall)
         auc_ = metrics.auc(recall, precision)
-        plt.plot(recall, precision, marker='.', label='Logistic')
+        plt.plot(recall, precision, marker='.', label='AEConv')
         # axis labels
         plt.xlabel('Recall')
         plt.ylabel('Precision')
@@ -464,8 +470,13 @@ class Wrapper(object):
                 pred_labels.append(False) #normal
 
         # precision, recall = metrics(r_test, pred_r)
-        precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
-        self.prc(precision, recall,'S')
+        # precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
+        # self.prc(precision, recall,'S')
+        average_precision = average_precision_score(labels, pred_labels)
+
+        disp = plot_precision_recall_curve(self.network, labels, pred_labels)
+        disp.ax_.set_title('2-class Precision-Recall curve: '
+                   'AP={0:0.2f}'.format(average_precision))
 
     def chevy(self, mean, std, r, labels):
         # Chevyshev http://kyrcha.info/2019/11/26/data-outlier-detection-using-the-chebyshev-theorem-paper-review-and-online-adaptation
@@ -505,8 +516,8 @@ class Wrapper(object):
                 pred_labels.append(1)
             else:
                 pred_labels.append(2)
-        precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
-        self.prc(precision, recall,'C')
+        # precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
+        # self.prc(precision, recall,'C')
 
 
         # return outliers
