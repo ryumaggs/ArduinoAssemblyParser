@@ -420,8 +420,8 @@ class Wrapper(object):
 
         # Visuals
         fake_labels = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2]
-        self.std3(mean, std, r_test, testing_labels)
-        self.chevy(mean, std, r_test, testing_labels)
+        self.std3(mean, std, r_test, fake_labels)
+        self.chevy(mean, std, r_test, fake_labels)
         print("----------------")
         rets = [self.args.run_name] + rets #run name
         print("rets", rets)
