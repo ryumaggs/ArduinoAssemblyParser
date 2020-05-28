@@ -326,7 +326,7 @@ class Wrapper(object):
         return precision, recall
 
     # def prc(precision, recall)
-    def recon_errors(r, data_loader):
+    def recon_errors(self, r, data_loader):
         # Gather recon errors on data
         r = []
         labels = []
@@ -346,7 +346,7 @@ class Wrapper(object):
 
         return r, labels
 
-    def fit_recon_to_norm(r):
+    def fit_recon_to_norm(self, r):
         # Plot training recon error distribution fit to gaussian
         mean = np.mean(r)
         std = np.std(r)
@@ -422,7 +422,7 @@ class Wrapper(object):
         print("rets", rets)
         return rets
 
-    def prc(precision, recall, type):
+    def prc(self, precision, recall, type):
         # calculate precision-recall AUC
         auc = auc(recall, precision)
         plt.plot(lr_recall, lr_precision, marker='.', label='Logistic')
@@ -441,7 +441,7 @@ class Wrapper(object):
             plt.savefig(currentDirectory + '/STD3-PRC.png')
 
 
-    def std3(mean, std, r, labels):
+    def std3(self, mean, std, r, labels):
         # STD*3
 
         cut_off = std * 3
@@ -457,7 +457,7 @@ class Wrapper(object):
         precision, recall, thresholds = precision_recall_curve(labels, pred_labels)
         self.prc(precision, recall,'S')
 
-    def chevy(mean, std, r, labels):
+    def chevy(self, mean, std, r, labels):
         # Chevyshev http://kyrcha.info/2019/11/26/data-outlier-detection-using-the-chebyshev-theorem-paper-review-and-online-adaptation
 
         # Stage 1
