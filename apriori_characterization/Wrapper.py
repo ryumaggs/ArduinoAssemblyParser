@@ -35,8 +35,8 @@ class Wrapper(object):
         self.epoch = 0
         self.num_norm = 0
         self.num_ana = 0
-        self.norm_limit = 200
-        self.ana_limit = 200
+        self.norm_limit = 2000
+        self.ana_limit = 2000
         self.norm_error = []
         self.ana_error = []
         self.auto=auto
@@ -404,7 +404,7 @@ class Wrapper(object):
         # r = gather_recon()
         while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
             rets, _ = self.ryu_testing(False, not self.data_loader.dataset.train)
-            rets, _ = self.run_epoch(self.data_loader, True)
+            # rets, _ = self.run_epoch(self.data_loader, True)
             print(self.num_norm, " || ", self.num_ana)
 
         data_loader = self.data_loader.switch_train(True)
