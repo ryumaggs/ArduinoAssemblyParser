@@ -524,16 +524,16 @@ class Wrapper(object):
         currentDirectory = os.getcwd()
         plt.savefig(currentDirectory + '/ROC.png')
 
-def ryu_test_procedure(self, load = True):
-    print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
-    self.load()
-    self.network.eval()
-    while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
-        rets, _ = self.ryu_testing(False,not self.data_loader.dataset.train)
-        print(self.num_norm, " || ", self.num_ana)
+    def ryu_test_procedure(self, load = True):
+        print(bcolors.OKBLUE+'*******TESTING********'+bcolors.ENDC)
+        self.load()
+        self.network.eval()
+        while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
+            rets, _ = self.ryu_testing(False,not self.data_loader.dataset.train)
+            print(self.num_norm, " || ", self.num_ana)
 
-    rets = [self.args.run_name] + rets #run name
-    return rets
+        rets = [self.args.run_name] + rets #run name
+        return rets
 
 
     def train(self):
