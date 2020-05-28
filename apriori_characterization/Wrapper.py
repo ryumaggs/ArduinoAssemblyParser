@@ -389,14 +389,14 @@ class Wrapper(object):
         self.network.cuda()
         self.network.eval()
         #run epoch
+        self.data_loader.switch_train(True)
 
         # r = gather_recon()
         while(self.num_norm < self.norm_limit or self.num_ana < self.ana_limit):
             # rets, _ = self.ryu_testing(False,not self.data_loader.dataset.train)
-            rets, _ = self.run_epoch(data_loader, True)
+            rets, _ = self.run_epoch(self.data_loader, True)
             print(self.num_norm, " || ", self.num_ana)
 
-        self.data_loader.switch_train(True)
         r, training_labels = recon_errors(self.data_loader)
 
         training_labels = torch.cat(labels, dim=0)
