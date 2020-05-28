@@ -332,9 +332,10 @@ class Wrapper(object):
         labels = []
         num = 0
         for i, data in enumerate(data_loader, 0):
+
+            input, label = data
             if i == 0:
                 print("label: ", label)
-            input, label = data
             labels.append(label)
             # load these tensors into gpu memory
             input = input.cuda()
