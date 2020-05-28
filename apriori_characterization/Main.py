@@ -83,7 +83,8 @@ def main(args):
         if args.ryu_testing:
             run_wrapper.ryu_test_procedure()
         else:
-            run_wrapper.test()
+            # run_wrapper.test()
+            run_wrapper.ryu_test_procedure()
     else:
         run_wrapper.train()
 
