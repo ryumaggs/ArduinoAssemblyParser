@@ -468,7 +468,7 @@ class Wrapper(object):
             else:
                 pred_labels.append(False) #normal
 
-        precision, recall = metrics(r_test, pred_r)
+        # precision, recall = metrics(r, pred_r)
         precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
         self.prc(precision, recall,'S')
         # average_precision = metrics.average_precision_score(labels, pred_labels)
