@@ -336,7 +336,7 @@ class Wrapper(object):
             input, label = data
 
 
-            label = torch.cat(label, dim=0)
+            # label = torch.cat(label, dim=0)
             label = torch.flatten(label)
             label = label[0].item()
 
