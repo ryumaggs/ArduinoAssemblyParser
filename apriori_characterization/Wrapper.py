@@ -398,7 +398,7 @@ class Wrapper(object):
         #     print(self.num_norm, " || ", self.num_ana)
 
         r, training_labels = self.recon_errors(data_loader)
-        training_labels = torch.cat(labels, dim=0)
+        training_labels = torch.cat(training_labels, dim=0)
         training_labels = torch.flatten(training_labels)
 
         mean, std = self.fit_recon_to_norm(r)
