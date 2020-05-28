@@ -334,8 +334,15 @@ class Wrapper(object):
         for i, data in enumerate(data_loader, 0):
 
             input, label = data
+
+
+            label = torch.cat(label, dim=0)
+            label = torch.flatten(label)
+            label = label[0].item()
+
             if i == 0:
                 print("label: ", label)
+
             labels.append(label)
             # load these tensors into gpu memory
             input = input.cuda()
@@ -405,8 +412,6 @@ class Wrapper(object):
         #     print(self.num_norm, " || ", self.num_ana)
 
         r, training_labels = self.recon_errors(data_loader)
-        training_labels = torch.cat(training_labels, dim=0)
-        training_labels = torch.flatten(training_labels)
 
         mean, std = self.fit_recon_to_norm(r)
 
