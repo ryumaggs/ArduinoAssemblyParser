@@ -22,8 +22,7 @@ from scipy.stats import shapiro
 from scipy.stats import norm
 from sklearn import metrics
 from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import plot_precision_recall_curve
-from sklearn.metrics import average_precision_score
+
 
 class Wrapper(object):
     def __init__(self, args, network_class, data_loader, device,auto,num_net = 1):
@@ -472,9 +471,9 @@ class Wrapper(object):
         # precision, recall = metrics(r_test, pred_r)
         # precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
         # self.prc(precision, recall,'S')
-        average_precision = average_precision_score(labels, pred_labels)
+        average_precision = metrics.average_precision_score(labels, pred_labels)
 
-        disp = plot_precision_recall_curve(self.network, labels, pred_labels)
+        disp = metrics.plot_precision_recall_curve(self.network, labels, pred_labels)
         disp.ax_.set_title('2-class Precision-Recall curve: '
                    'AP={0:0.2f}'.format(average_precision))
 
