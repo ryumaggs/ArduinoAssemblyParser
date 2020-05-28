@@ -340,8 +340,7 @@ class Wrapper(object):
             flat_label = torch.flatten(label)
             flat_label = flat_label[0].item()
 
-            if i == 0:
-                print("label: ", flat_label)
+            print("label: ", flat_label)
 
             labels.append(flat_label)
             # load these tensors into gpu memory
@@ -355,8 +354,6 @@ class Wrapper(object):
 
             r.append(r_item)
             num = i
-
-        print("num: ", num)
 
         return r, labels
 
@@ -489,8 +486,7 @@ class Wrapper(object):
 
         # Data that are more extreme than the ODVs of stage-1 are removed from the data for the second phase of the algorithm.
         advance = [err for err in r if err > lower and err < upper]
-        print("advancing")
-        print(advance)
+
         stage_1_behind = [err for err in r if err < lower or err > upper]
 
         # Stage 2
@@ -502,9 +498,6 @@ class Wrapper(object):
         lower = mean_trunc - (k2 * std_trunc)
         upper = mean_trunc + (k2 * std_trunc)
 
-        print("LOWER: ", lower)
-        print("UPPER: ", upper)
-        print("R: ", r)
         outliers = [err for err in r if err < lower or err > upper]
         stage_2_behind = [err for err in r if err > lower or err < upper]
 
