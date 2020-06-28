@@ -329,7 +329,10 @@ class Wrapper(object):
     def recon_errors(self, data_loader):
         # Gather recon errors on data
         r = []
+
         labels = []
+        inputs = []
+        scores = []
         num = 0
         for i, data in enumerate(data_loader, 0):
 
@@ -345,8 +348,10 @@ class Wrapper(object):
             labels.append(flat_label)
             # load these tensors into gpu memory
             input = input.cuda()
+            inputs.append(input)
             # check if the inputs are cpu or gpu tensor
             output = self.network(input)
+            scores.append(output)
             r_error,test_perc,anom_loss,norm_loss = self.network.loss(input, label, output)
             # inputs.append(input)
             r_item = r_error.item()
@@ -355,7 +360,7 @@ class Wrapper(object):
             r.append(r_item)
             num = i
 
-        return r, labels
+        return r, labels, inputs, scores
 
     def fit_recon_to_norm(self, r):
         # Plot training recon error distribution fit to gaussian
@@ -407,14 +412,16 @@ class Wrapper(object):
 
         # data_loader = self.data_loader.switch_train(True)
         # data_loader_test = self.data_loader.switch_train(False)
-        r, training_labels = self.recon_errors(data_loader)
+
+
+        r, training_labels, training_inputs, training_scores = self.recon_errors(data_loader)
 
         mean, std = self.fit_recon_to_norm(r)
 
         # Gather testing recon errors
         self.data_loader.switch_train(False)
-        r_test, testing_labels = self.recon_errors(data_loader_test)
-
+        r_test, testing_labels, testing_inputs, testing_scores = self.recon_errors(data_loader_test)
+        self.prc(testing_inputs, testing_labels, testing_scores)
 
         # Visuals
         fake_labels = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2]
@@ -426,30 +433,35 @@ class Wrapper(object):
         print("rets", rets)
         return rets
 
-    def prc(self, precision, recall, type):
+    def prc(self, X_test, y_test, y_score, type):
         # calculate precision-recall AUC
 
 
+        # print("precision: ", precision)
+        # print("recall: ", recall)
+        # auc_ = metrics.auc(recall, precision)
+        # plt.plot(recall, precision, marker='.', label='AEConv')
+        # # axis labels
+        # plt.xlabel('Recall')
+        # plt.ylabel('Precision')
+        # plt.title('AUC: '+ str(auc_) , loc='left')
+        # # show the legend
+        # plt.legend()
+        # # show the plot
+        # currentDirectory = os.getcwd()
+        average_precision = average_precision_score(y_test, y_score)
 
+        print('Average precision-recall score: {0:0.2f}'.format(
+            average_precision))
 
+        disp = plot_precision_recall_curve(classifier, X_test, y_test)
+        disp.ax_.set_title('2-class Precision-Recall curve: '
+                   'AP={0:0.2f}'.format(average_precision))
 
-        print("precision: ", precision)
-        print("recall: ", recall)
-        auc_ = metrics.auc(recall, precision)
-        plt.plot(recall, precision, marker='.', label='AEConv')
-        # axis labels
-        plt.xlabel('Recall')
-        plt.ylabel('Precision')
-        plt.title('AUC: '+ str(auc_) , loc='left')
-        # show the legend
-        plt.legend()
-        # show the plot
-        currentDirectory = os.getcwd()
-
-        if type == 'C':
-            plt.savefig(currentDirectory + '/Chevy-PRC.png')
-        else:
-            plt.savefig(currentDirectory + '/STD3-PRC.png')
+        # if type == 'C':
+        #     plt.savefig(currentDirectory + '/Chevy-PRC.png')
+        # else:
+        #     plt.savefig(currentDirectory + '/prc-PRC.png')
         plt.clf()
 
     def std3(self, mean, std, r, labels):
@@ -466,7 +478,7 @@ class Wrapper(object):
 
         # precision, recall = metrics(r, pred_r)
         precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
-        self.prc(precision, recall,'S')
+        # self.prc(precision, recall,'S')
         # average_precision = metrics.average_precision_score(labels, pred_labels)
         #
         # disp = metrics.plot_precision_recall_curve(self.network, labels, pred_labels)
@@ -508,7 +520,7 @@ class Wrapper(object):
             else:
                 pred_labels.append(2)
         precision, recall, thresholds = precision_recall_curve(labels, pred_labels, 1)
-        self.prc(precision, recall,'C')
+        # self.prc(precision, recall,'C')
 
 
         # return outliers
