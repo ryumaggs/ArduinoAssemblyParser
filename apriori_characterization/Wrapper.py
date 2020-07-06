@@ -347,7 +347,7 @@ class Wrapper(object):
 
             labels.append(flat_label)
             # load these tensors into gpu memory
-            input = input.cuda()
+            # input = input.cuda()
             inputs.append(input)
             # check if the inputs are cpu or gpu tensor
             output = self.network(input)
